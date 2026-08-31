@@ -1,0 +1,275 @@
+{
+  "google": {
+    "name": "Google Gemini",
+    "description": "Google's Gemini AI models for creative writing and brainstorming",
+    "baseUrl": "https://generativelanguage.googleapis.com",
+    "modelsEndpoint": "/v1beta/models",
+    "chatEndpoint": "/v1beta/models/{model}:generateContent",
+    "keyRequired": true,
+    "keyPlaceholder": "Enter your Google AI API key...",
+    "keyHelpUrl": "https://aistudio.google.com/app/apikey",
+    "keyHelpText": "Get your free API key from Google AI Studio",
+    
+    "fallbackModels": [
+      {
+        "value": "gemini-2.0-flash-exp",
+        "label": "Gemini 2.0 Flash (Experimental)",
+        "description": "Latest experimental model with enhanced creative capabilities",
+        "contextLength": 1000000,
+        "recommended": true
+      },
+      {
+        "value": "gemini-1.5-pro",
+        "label": "Gemini 1.5 Pro", 
+        "description": "High-quality model for complex creative tasks",
+        "contextLength": 2000000,
+        "premium": true
+      },
+      {
+        "value": "gemini-1.5-flash",
+        "label": "Gemini 1.5 Flash",
+        "description": "Fast, efficient model for creative writing",
+        "contextLength": 1000000,
+        "recommended": false
+      },
+      {
+        "value": "gemini-1.5-flash-8b",
+        "label": "Gemini 1.5 Flash 8B",
+        "description": "Lightweight model for quick brainstorming",
+        "contextLength": 1000000,
+        "recommended": false
+      }
+    ],
+
+    "apiLimits": {
+      "maxChatHistoryMessages": 20,
+      "maxChatHistoryTokens": 20000,
+      "estimatedTokensPerChar": 0.3
+    },
+    
+    "defaultGenerationConfig": {
+      "temperature": 0.7,
+      "maxOutputTokens": 2048,
+      "topP": 0.9,
+      "topK": 40,
+      "candidateCount": 1
+    },
+    
+    "creativeGenerationConfig": {
+      "temperature": 0.9,
+      "maxOutputTokens": 2048,
+      "topP": 0.95,
+      "topK": 50,
+      "candidateCount": 1
+    },
+    
+    "analyticalGenerationConfig": {
+      "temperature": 0.3,
+      "maxOutputTokens": 2048,
+      "topP": 0.8,
+      "topK": 20,
+      "candidateCount": 1
+    }
+  },
+  
+  "openai": {
+    "name": "OpenAI GPT",
+    "description": "OpenAI's GPT models for creative writing (future implementation)",
+    "baseUrl": "https://api.openai.com",
+    "modelsEndpoint": "/v1/models",
+    "chatEndpoint": "/v1/chat/completions",
+    "keyRequired": true,
+    "keyPlaceholder": "Enter your OpenAI API key...",
+    "keyHelpUrl": "https://platform.openai.com/api-keys",
+    "keyHelpText": "Get your API key from OpenAI Platform",
+    "enabled": true,
+    
+    "fallbackModels": [
+      {
+        "value": "gpt-4",
+        "label": "GPT-4",
+        "description": "Advanced model for complex creative tasks",
+        "contextLength": 8192,
+        "premium": true
+      },
+      {
+        "value": "gpt-4-turbo",
+        "label": "GPT-4 Turbo", 
+        "description": "Faster GPT-4 with larger context window",
+        "contextLength": 128000,
+        "recommended": true
+      },
+      {
+        "value": "gpt-3.5-turbo",
+        "label": "GPT-3.5 Turbo",
+        "description": "Fast and efficient for creative writing",
+        "contextLength": 16385,
+        "recommended": false
+      }
+    ],
+
+    "apiLimits": {
+      "maxChatHistoryMessages": 20,
+      "maxChatHistoryTokens": 8000,
+      "estimatedTokensPerChar": 0.3
+    }
+  },
+  
+  "anthropic": {
+    "name": "Anthropic Claude",
+    "description": "Anthropic's Claude models for creative writing",
+    "baseUrl": "https://api.anthropic.com", 
+    "modelsEndpoint": null,
+    "chatEndpoint": "/v1/messages",
+    "keyRequired": true,
+    "keyPlaceholder": "Enter your Anthropic API key...",
+    "keyHelpUrl": "https://console.anthropic.com/",
+    "keyHelpText": "Get your API key from Anthropic Console",
+    "enabled": true,
+    
+    "fallbackModels": [
+      {
+        "value": "claude-3-5-sonnet-20241022",
+        "label": "Claude 3.5 Sonnet",
+        "description": "Highly capable model for creative writing",
+        "contextLength": 200000,
+        "recommended": true
+      },
+      {
+        "value": "claude-3-5-haiku-20241022", 
+        "label": "Claude 3.5 Haiku",
+        "description": "Fast model for quick creative tasks",
+        "contextLength": 200000,
+        "recommended": false
+      }
+    ],
+
+    "apiLimits": {
+      "maxChatHistoryMessages": 15,
+      "maxChatHistoryTokens": 150000,
+      "estimatedTokensPerChar": 0.3
+    }
+  },
+
+  "openrouter": {
+    "name": "OpenRouter",
+    "description": "Access to multiple AI models through OpenRouter",
+    "baseUrl": "https://openrouter.ai/api",
+    "modelsEndpoint": "/v1/models",
+    "chatEndpoint": "/v1/chat/completions",
+    "keyRequired": true,
+    "keyPlaceholder": "Enter your OpenRouter API key...",
+    "keyHelpUrl": "https://openrouter.ai/keys",
+    "keyHelpText": "Get your API key from OpenRouter",
+    "enabled": true,
+    
+    "fallbackModels": [
+      {
+        "value": "deepseek/deepseek-r1-0528:free",
+        "label": "DeepSeek R1 (Free)",
+        "description": "Reasoning model, good for complex tasks",
+        "recommended": true
+      },
+      {
+        "value": "x-ai/grok-4.1-fast:free",
+        "label": "Grok 4.1 Fast (Free)",
+        "description": "Fast and capable, good for creative writing",
+        "recommended": true
+      },
+      {
+        "value": "meta-llama/llama-3.3-70b-instruct:free",
+        "label": "Llama 3.3 70B (Free)",
+        "description": "Large, capable model for creative tasks"
+      },
+      {
+        "value": "qwen/qwen-2.5-72b-instruct:free",
+        "label": "Qwen 2.5 72B (Free)",
+        "description": "Strong multilingual capabilities"
+      },
+      {
+        "value": "deepseek/deepseek-chat-v3-0324:free",
+        "label": "DeepSeek Chat V3 (Free)",
+        "description": "Balanced chat model"
+      },
+      {
+        "value": "google/gemini-2.0-flash-exp:free",
+        "label": "Gemini 2.0 Flash (Free)",
+        "description": "Fast Google model (may be rate-limited)"
+      },
+      {
+        "value": "tngtech/deepseek-r1t-chimera:free",
+        "label": "DeepSeek R1T Chimera (Free)",
+        "description": "Experimental reasoning model"
+      },
+      {
+        "value": "arliai/qwq-32b-arliai-rpr-v1:free",
+        "label": "QwQ 32B RPR (Free)",
+        "description": "Role-play focused model"
+      }
+    ],
+
+    "apiLimits": {
+      "maxChatHistoryMessages": 20,
+      "maxChatHistoryTokens": 20000,
+      "estimatedTokensPerChar": 0.3
+    }
+  },
+
+  "nanogpt": {
+    "name": "NanoGPT",
+    "description": "OpenAI-compatible access to NanoGPT account, subscription, and paid model catalogs",
+    "baseUrl": "https://nano-gpt.com",
+    "modelsEndpoint": "/api/v1/models?detailed=true",
+    "chatEndpoint": "/api/v1/chat/completions",
+    "keyRequired": true,
+    "keyPlaceholder": "Enter your NanoGPT API key...",
+    "keyHelpUrl": "https://nano-gpt.com/api",
+    "keyHelpText": "Manage your NanoGPT API key",
+    "enabled": true,
+    "capabilities": {
+      "billingModes": true,
+      "detailedModelMetadata": true,
+      "reasoningExcludedByDefault": true
+    },
+    "modes": [
+      { "value": "account", "label": "Account default" },
+      { "value": "subscription", "label": "Subscription only" },
+      { "value": "paid", "label": "Paid / extras catalog" }
+    ],
+    "fallbackModels": [],
+    "apiLimits": {
+      "maxChatHistoryMessages": 30,
+      "maxChatHistoryTokens": 64000,
+      "estimatedTokensPerChar": 0.3
+    },
+    "defaultGenerationConfig": {
+      "temperature": 0.7,
+      "maxOutputTokens": 2048,
+      "topP": 0.9
+    }
+  },
+  
+  "meta": {
+    "providerSettings": {
+      "defaultProvider": "google",
+      "defaultModel": "gemini-2.0-flash-exp",
+      "maxRetries": 3,
+      "timeout": 30000,
+      "maxPromptLength": 50000,
+      "maxChatHistory": 20
+    },
+    
+    "uiSettings": {
+      "showProviderDescriptions": true,
+      "showModelContextLengths": true,
+      "showPremiumIndicators": true,
+      "groupModelsByCapability": false
+    },
+    
+    "rateLimiting": {
+      "enabled": false,
+      "requestsPerMinute": 60,
+      "requestsPerHour": 1000
+    }
+  }
+}

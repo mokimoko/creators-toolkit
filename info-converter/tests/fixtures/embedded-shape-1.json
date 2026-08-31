@@ -1,0 +1,25 @@
+{
+  "basic": {
+    "title": "Fixture One",
+    "overview": "Earliest supported embedded shape"
+  },
+  "appearance": {
+    "template": "journal",
+    "colorScheme": "current"
+  },
+  "characters": [
+    {
+      "name": "Aster",
+      "description": "A synthetic character"
+    }
+  ],
+  "storylines": [],
+  "world": {
+    "locations": [
+      {
+        "name": "Glass Harbor",
+        "description": "A fictional fixture location"
+      }
+    ]
+  }
+}

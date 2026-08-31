@@ -1,0 +1,639 @@
+/* --- TheoNoel Story Theme --- */
+/* Name: Feral Winter (Fixed) */
+
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Source+Sans+Pro:wght@400;600&display=swap');
+
+:root {
+    /* Backgrounds - FORCED DARKNESS */
+    --bg-deep: #121416;       /* The darkest night */
+    --bg-panel: #1e2226;      /* Slate rock/metal */
+    --bg-element: #25292e;    /* UI Elements */
+    
+    /* Accents */
+    --heat-amber: #d49a3f;    /* Theo's eyes, Firelight */
+    --heat-glow: rgba(212, 154, 63, 0.15);
+    
+    --cold-teal: #5a7d8a;     /* Noel's scarf, Medical scrubs */
+    --blood-rust: #6e2c2c;    /* Dried blood, Rust */
+    
+    /* Text - High Legibility */
+    --text-main: #c4c8cc;     /* Ash grey */
+    --text-header: #e0e0e0;   /* Bone white */
+    --text-muted: #6f7882;    /* Faded ink */
+    --text-dialog: #9ACCCC;
+    
+    /* Borders & UI */
+    --border-rough: #38404a;
+    --border-highlight: #d49a3f;
+    --shadow-soft: rgba(0,0,0,0.5);
+    --overlay-color: rgba(18, 20, 22, 0.95);
+}
+
+/* --- Base Layout --- */
+
+body {
+    font-family: 'Source Sans Pro', 'Helvetica Neue', sans-serif; /* Cleaner, stronger font */
+    font-size: 18px; /* Bumped up by 1px for comfort */
+    line-height: 1.7; /* Slightly more space between lines */
+    margin: 0;
+    padding: 20px;
+    background-color: var(--bg-deep) !important; /* Force dark body */
+    /* Gritty texture overlay */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    color: var(--text-main);
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Typography Overrides */
+p { margin: 0 0 15px 0; }
+em { color: var(--text-muted); font-style: italic; }
+strong { color: var(--heat-amber); font-weight: 700; }
+del { text-decoration: line-through; opacity: 0.5; }
+.dialogue {
+    font-family: inherit;      /* Or specify a distinct dialogue font */
+    font-weight: 600;         /* Make the dialogue stand out */
+    color: var(--text-dialog); /* Apply the special dialogue color */
+}
+/* Legacy font color support */
+font[color=blue] { color: var(--cold-teal) !important; }
+
+/* The Line Divider - Compact Dots */
+hr, .section-divider {
+    border: 0;
+    background: transparent;
+    width: 100%;
+    
+    /* Reduced margin: 25px top/bottom is much cleaner for chat logs */
+    margin: 25px 0; 
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 10px; /* Reduced height of the container itself */
+}
+
+hr::after, .section-divider::after {
+    content: '';
+    display: block;
+    
+    /* Center Dot */
+    width: 6px;
+    height: 6px;
+    background-color: var(--heat-amber);
+    
+    /* Side Dots */
+    box-shadow: 
+        -20px 0 0 var(--border-rough), 
+         20px 0 0 var(--border-rough),
+         0 0 5px var(--heat-amber);
+}
+
+/* --- Main Containers (The Fix) --- */
+
+/* We use !important here to override any default white backgrounds from the generator */
+.content-wrapper {
+    background-color: var(--bg-panel) !important;
+    border: 1px solid var(--border-rough) !important;
+    border-top: 3px solid var(--cold-teal) !important; /* Noel's Color Top Border */
+    padding: 40px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px -5px rgba(0,0,0,0.5);
+    color: var(--text-main) !important;
+}
+
+.rp-container {
+    background-color: var(--bg-panel) !important;
+    border: 1px solid var(--border-rough) !important;
+    border-top: 3px solid var(--blood-rust) !important; /* Rust/Blood Top Border */
+    padding: 40px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px -5px rgba(0,0,0,0.5);
+    color: var(--text-main) !important;
+}
+
+/* --- Header & Titles --- */
+
+header {
+    background: var(--bg-panel);
+    padding: 40px 30px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-rough) !important;
+    margin-bottom: 0; 
+}
+
+header h1 {
+    font-family: 'Special Elite', cursive;
+    font-size: 2.8em;
+    color: var(--heat-amber);
+    text-shadow: 2px 2px 0px #000;
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+header h2 {
+    font-family: 'Lato', sans-serif;
+    font-size: 1em;
+    color: var(--text-muted);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin: 0;
+}
+
+/* --- Navigation --- */
+
+nav {
+    background-color: var(--bg-deep) !important;
+    border: none !important;
+    border-bottom: 1px solid var(--border-rough) !important;
+    padding: 15px;
+    text-align: center;
+    font-family: 'Special Elite', cursive;
+}
+
+nav a {
+    color: var(--text-muted) !important;
+    text-decoration: none !important;
+    margin: 0 15px;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+    border-bottom: 1px dotted transparent;
+}
+
+nav a:hover {
+    color: var(--heat-amber) !important;
+    border-bottom: 1px dotted var(--heat-amber);
+}
+
+/* --- Story Info & Stats --- */
+
+.story-info {
+    background-color: var(--bg-element) !important;
+    border: 1px solid var(--border-rough) !important;
+    padding: 25px;
+    margin-bottom: 20px;
+    font-size: 0.95em;
+    position: relative;
+}
+
+.story-info strong { color: var(--text-header); }
+
+.story-description, .story-stats {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--border-rough);
+}
+
+.stat-item {
+    display: inline-block;
+    border: 1px solid var(--cold-teal);
+    padding: 2px 8px;
+    font-size: 0.8em;
+    margin: 4px;
+    color: var(--cold-teal);
+    background: rgba(90, 125, 138, 0.1);
+}
+
+/* Export Button */
+.export-button {
+    background-color: var(--bg-deep);
+    border: 1px solid var(--border-rough);
+    padding: 5px 10px;
+    color: var(--text-muted);
+    font-family: 'Special Elite', cursive;
+    font-size: 0.8em;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    transition: all 0.2s;
+}
+
+.export-button:hover {
+    border-color: var(--heat-amber);
+    color: var(--heat-amber);
+}
+
+/* --- Table of Contents --- */
+
+.table-of-contents {
+    background-color: var(--bg-element);
+    border: 1px solid var(--border-rough);
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.table-of-contents h3 {
+    margin: 0 0 15px 0;
+    color: var(--heat-amber);
+    font-family: 'Special Elite', cursive;
+    border-bottom: 1px solid var(--border-rough);
+    padding-bottom: 10px;
+}
+
+.table-of-contents ul {
+    margin: 0;
+    padding-left: 20px;
+    list-style-type: square;
+}
+
+.table-of-contents a {
+    color: var(--text-main);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.table-of-contents a:hover { color: var(--heat-amber); }
+
+.word-count-display {
+    font-family: 'Special Elite', cursive;
+    font-size: 0.8em;
+    color: var(--text-muted);
+    text-align: right;
+    margin-top: 15px;
+}
+
+/* --- Gallery --- */
+
+.gallery-header {
+    background-color: var(--bg-element) !important;
+    border: 1px solid var(--border-rough) !important;
+    padding: 15px 25px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-header);
+    font-family: 'Special Elite', cursive;
+}
+
+.story-gallery {
+    background-color: var(--bg-deep) !important;
+    border: 1px solid var(--border-rough) !important;
+    border-top: none !important;
+    padding: 15px;
+}
+
+.story-gallery img {
+    border: 3px solid var(--bg-panel);
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    filter: grayscale(80%) contrast(1.2);
+}
+
+.story-gallery img:hover {
+    opacity: 1;
+    border-color: var(--heat-amber);
+    filter: none;
+    transform: scale(1.02);
+}
+
+.toggle-icon { transition: transform 0.2s; color: var(--text-muted); }
+.toggle-icon.collapsed { transform: rotate(-90deg); }
+.gallery-content { transition: max-height 0.2s ease; overflow: hidden; }
+.gallery-content.collapsed { display: none; }
+
+/* --- Part Headers --- */
+
+.part-header {
+    background-color: var(--bg-deep);
+    border: 1px solid var(--blood-rust);
+    margin: 30px 0 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.part-header h2 {
+    margin: 0;
+    padding: 15px 25px;
+    font-family: 'Special Elite', cursive;
+    font-size: 1.4em;
+    color: var(--blood-rust);
+    letter-spacing: 1px;
+}
+
+.part-toggle {
+    padding: 0 20px;
+    color: var(--blood-rust);
+    font-weight: bold;
+}
+
+.part-toggle.collapsed { transform: rotate(-90deg); }
+.rp-container.collapsed { display: none; }
+
+/* --- RP Entries --- */
+
+.rp-entry {
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-rough);
+}
+
+.rp-entry:last-child { border-bottom: none; }
+
+/* Character Names - "Tape/Label" Style */
+.character-name {
+    display: inline-block;
+    background-color: var(--bg-deep);
+    color: var(--text-header);
+    padding: 8px 20px;
+    font-family: 'Special Elite', cursive;
+    font-size: 1.2em;
+    border: 1px solid var(--border-rough);
+    margin-bottom: 15px;
+    /* "Torn Tape" look via clip-path */
+    clip-path: polygon(0 0, 100% 2%, 98% 100%, 2% 98%); 
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+}
+
+/* End of Record */
+.rp-container:last-of-type::after {
+    content: "/// CONNECTION LOST ///";
+    display: block;
+    text-align: center;
+    padding-top: 40px;
+    font-family: 'Special Elite', cursive;
+    color: var(--blood-rust);
+    opacity: 0.7;
+    letter-spacing: 3px;
+}
+
+/* --- Side Panels --- */
+
+.soundtrack-panel, .comments-panel {
+    position: fixed;
+    left: 30px;
+    width: 320px;
+    background-color: var(--bg-element) !important;
+    border: 2px solid var(--border-rough) !important;
+    box-shadow: 10px 10px 30px rgba(0,0,0,0.8);
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    transform: translateX(-360px) !important; /* Hidden by default */
+}
+
+.soundtrack-panel { top: 100px; }
+.comments-panel { top: 160px; }
+
+.soundtrack-panel.open, .comments-panel.open { transform: translateX(0) !important; }
+
+/* Toggles */
+.soundtrack-toggle, .comments-toggle {
+    position: absolute;
+    top: 0;
+    right: -45px;
+    width: 45px;
+    height: 45px;
+    background-color: var(--bg-element);
+    border: 2px solid var(--border-rough);
+    border-left: none;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.soundtrack-toggle:hover { color: var(--heat-amber); background: var(--bg-panel); }
+.comments-toggle:hover { color: var(--cold-teal); background: var(--bg-panel); }
+
+/* Hiding toggles when open logic */
+.soundtrack-panel.open .soundtrack-toggle,
+.comments-panel.open .comments-toggle {
+    top: 10px; right: 10px; width: 30px; height: 30px; font-size: 14px; border: 1px solid var(--border-rough);
+}
+.soundtrack-panel.open ~ .comments-panel .comments-toggle,
+.comments-panel.open ~ .soundtrack-panel .soundtrack-toggle { opacity: 0; pointer-events: none; }
+
+.soundtrack-header, .comments-header {
+    background-color: var(--bg-deep);
+    padding: 15px;
+    font-family: 'Special Elite', cursive;
+    border-bottom: 1px solid var(--border-rough);
+    color: var(--text-header);
+}
+
+.soundtrack-content, .comments-content {
+    padding: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+/* Playlist Items */
+.soundtrack-track a {
+    color: var(--text-main);
+    text-decoration: none;
+    display: block;
+    padding: 8px 0;
+    border-bottom: 1px dotted var(--border-rough);
+}
+.soundtrack-track a:hover { color: var(--heat-amber); padding-left: 5px; }
+.soundtrack-section-title { color: var(--cold-teal); font-weight: bold; margin-top: 10px; border-bottom: 1px solid var(--border-rough); }
+
+/* Comments */
+.comment-block {
+    background: var(--bg-deep);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-left: 2px solid var(--border-rough);
+    font-size: 0.9em;
+}
+.comments-section-title { color: var(--heat-amber); font-weight: bold; border-bottom: 1px solid var(--border-rough); margin-bottom: 10px; }
+
+/* --- Glossary --- */
+
+.glossary-section {
+    background-color: var(--bg-element);
+    border: 1px solid var(--border-rough);
+    padding: 25px;
+    margin: 40px 0;
+}
+
+.glossary-title {
+    font-family: 'Special Elite', cursive;
+    color: var(--heat-amber);
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-rough);
+    padding-bottom: 10px;
+}
+
+.glossary-entries { display: grid; gap: 15px; }
+
+.glossary-item {
+    background-color: var(--bg-deep);
+    padding: 15px;
+    padding-left: 40px;
+    border-left: 3px solid var(--border-rough);
+    position: relative;
+    font-size: 0.9em;
+}
+
+.glossary-item.glossary-highlight {
+    border-left-color: var(--heat-amber);
+    background-color: rgba(212, 154, 63, 0.05);
+}
+
+.glossary-term-label {
+    color: var(--cold-teal);
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    font-family: 'Special Elite', cursive;
+}
+
+.glossary-return {
+    position: absolute;
+    left: 10px;
+    top: 15px;
+    width: 20px;
+    height: 20px;
+    background: var(--border-rough);
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 12px;
+}
+.glossary-return:hover { background: var(--heat-amber); color: var(--bg-deep); }
+
+.glossary-link {
+    border-bottom: 1px dotted var(--heat-amber);
+    cursor: help;
+}
+
+.glossary-tooltip {
+    display: none;
+    position: fixed;
+    background: var(--bg-element);
+    border: 1px solid var(--heat-amber);
+    padding: 10px;
+    font-size: 0.85em;
+    max-width: 300px;
+    z-index: 2000;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    color: var(--text-main);
+}
+
+/* --- Scroll Top Button --- */
+
+.scroll-top-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 45px;
+    height: 45px;
+    background-color: var(--bg-element);
+    color: var(--heat-amber);
+    border: 1px solid var(--heat-amber);
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scroll-top-btn.visible { opacity: 1; }
+.scroll-top-btn:hover { background-color: var(--heat-amber); color: var(--bg-deep); }
+
+/* --- Image Modal --- */
+
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--overlay-color);
+    backdrop-filter: blur(3px);
+}
+
+.image-modal.show { display: block !important; }
+
+.image-modal-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+.image-modal-content img {
+    max-width: 90%;
+    max-height: 90%;
+    border: 2px solid var(--text-muted);
+    box-shadow: 0 0 20px rgba(0,0,0,0.8);
+}
+
+.image-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background: none;
+    border: none;
+    color: var(--text-main);
+    font-size: 40px;
+    cursor: pointer;
+    z-index: 10001;
+}
+.image-modal-close:hover { color: var(--heat-amber); }
+
+.image-modal-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: 1px solid var(--text-muted);
+    color: var(--text-main);
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 10001;
+}
+
+.image-modal-nav:hover {
+    border-color: var(--heat-amber);
+    color: var(--heat-amber);
+}
+
+.image-modal-nav[style*="display: none"] { display: none !important; }
+.image-modal-nav.prev { left: 20px; }
+.image-modal-nav.next { right: 20px; }
+
+/* --- Scrollbars (Webkit) --- */
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { 
+    background: var(--border-rough); 
+    border: 2px solid var(--bg-deep);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--heat-amber); }
+
+/* --- Mobile --- */
+
+@media (max-width: 768px) {
+    .content-wrapper, .rp-container { padding: 20px; }
+    header { padding: 20px; }
+    header h1 { font-size: 2em; }
+    .soundtrack-panel, .comments-panel { width: 280px; }
+    .image-modal-nav { width: 40px; height: 40px; font-size: 16px; }
+    .image-modal-nav.prev { left: 10px; }
+    .image-modal-nav.next { right: 10px; }
+}

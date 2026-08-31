@@ -1,0 +1,16 @@
+{
+  "fixture": "edge-cases/legacy-content-edge-cases.html",
+  "covers": [
+    "hyphenated title and universe",
+    "regex metacharacters in character names",
+    "Unicode character names",
+    "raw HTML in roleplay content",
+    "linked footnotes",
+    "glossary links",
+    "missing background and story images"
+  ],
+  "expected": {
+    "documentTitle": "Project - Alpha - Universe - Beta",
+    "characterNames": ["A+B:", "Dr. [X]:", "李雷:"]
+  }
+}

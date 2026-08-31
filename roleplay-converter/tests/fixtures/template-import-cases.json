@@ -1,0 +1,22 @@
+{
+  "cases": [
+    { "template": "generated.css", "html": "<meta name=\"rp-archiver-template\" content=\"generated.css\">" },
+    { "template": "generated-1.css", "html": "<meta name=\"rp-archiver-template\" content=\"generated-1.css\">" },
+    { "template": "generated-2.css", "html": "<meta name=\"rp-archiver-template\" content=\"generated-2.css\">" },
+    { "template": "generated-3.css", "html": "<meta name=\"rp-archiver-template\" content=\"generated-3.css\">" },
+    { "template": "generated-4.css", "html": "<meta name=\"rp-archiver-template\" content=\"generated-4.css\">" },
+    { "template": "generated-5.css", "html": "<meta name=\"rp-archiver-template\" content=\"generated-5.css\">" },
+    { "template": "generated-6.css", "html": "<meta name=\"rp-archiver-template\" content=\"generated-6.css\">" },
+    { "template": "generated-7.css", "html": "<meta name=\"rp-archiver-template\" content=\"generated-7.css\">" },
+    { "template": "generated-8.css", "html": "<meta name=\"rp-archiver-template\" content=\"generated-8.css\">" },
+    { "template": "generated-9.css", "html": "<meta name=\"rp-archiver-template\" content=\"generated-9.css\">" },
+    { "template": "generated-10.css", "html": "<meta name=\"rp-archiver-template\" content=\"generated-10.css\">" },
+    { "template": "generated-11.css", "html": "<meta name=\"rp-archiver-template\" content=\"generated-11.css\">" },
+    { "template": "generated-12.css", "html": "<meta name=\"rp-archiver-template\" content=\"generated-12.css\">" },
+    { "template": "generated-13.css", "html": "<meta name=\"rp-archiver-template\" content=\"generated-13.css\">" },
+    { "template": "generated-14.css", "html": "<meta name=\"rp-archiver-template\" content=\"generated-14.css\">" },
+    { "template": "generated-15.css", "html": "<meta name=\"rp-archiver-template\" content=\"generated-15.css\">" },
+    { "template": "generated-16.css", "html": "<meta name=\"rp-archiver-template\" content=\"generated-16.css\">" },
+    { "template": "generated-17.css", "html": "<meta name=\"rp-archiver-template\" content=\"generated-17.css\">" }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "basic": {
+    "title": "Fixture Five — 星海",
+    "subtitle": "Quotes: \"double\" and 'single'",
+    "banner": "assets/banner.webp",
+    "overviewTitle": "Edge values",
+    "overview": "Text containing }; and </script> and <strong>HTML-like text</strong>.",
+    "overviewImage": "assets/overview.webp",
+    "overviewLinks": [],
+    "customNavLinks": [],
+    "includedPages": [],
+    "titleSettings": {
+      "show": true,
+      "position": "center",
+      "font": "theme",
+      "color": "#d8c7ff"
+    }
+  },
+  "appearance": {
+    "template": "journal",
+    "bannerStyle": "none",
+    "overviewStyle": "journal",
+    "navigationStyle": "journal",
+    "colorScheme": "quietEcho",
+    "fontSet": "serif",
+    "bannerSize": "large",
+    "worldCategoriesHeader": "default",
+    "pageHeader": "standard",
+    "cardStyle": "current",
+    "containerStyle": "left-border",
+    "subcontainerStyle": "soft-bg",
+    "infodisplayStyle": "default",
+    "siteWidth": "standard",
+    "buttonStyle": "rounded",
+    "customNavButtonStyle": "rounded",
+    "backToTopStyle": "circular",
+    "backgroundStyle": "default",
+    "backgroundColorOverlay": "rgba(0,0,0,.3)",
+    "storylineStyle": "default",
+    "customColorOverrides": {
+      "accent": "#b39ddb"
+    }
+  },
+  "characters": [
+    {
+      "name": "Mira",
+      "notes": "Author-only character note",
+      "hidden": true,
+      "tags": ["fixture", "unicode-雪"],
+      "images": ["assets/characters/mira.webp"]
+    }
+  ],
+  "storylines": [
+    {
+      "title": "Visible Thread",
+      "notes": "Author-only storyline note",
+      "hidden": false
+    }
+  ],
+  "plans": [
+    {
+      "title": "Calendar Arc",
+      "events": [
+        {
+          "title": "Convergence",
+          "timing": {
+            "date": { "year": 842, "month": 4, "day": 12 },
+            "timeSystemId": "fixture-calendar"
+          }
+        }
+      ]
+    }
+  ],
+  "plansOptions": {
+    "selectedTimeSystemId": "fixture-calendar"
+  },
+  "playlists": [],
+  "customPages": [
+    {
+      "id": "private-drafts",
+      "name": "Drafts",
+      "hidden": true,
+      "elements": []
+    }
+  ],
+  "world": {
+    "items": [
+      {
+        "name": "Compass",
+        "icon": "assets/icons/compass.webp",
+        "notes": "Author-only item note",
+        "hidden": true
+      }
+    ],
+    "futureCategory": [
+      {
+        "name": "Unknown category survives"
+      }
+    ]
+  },
+  "linkedLorebook": {
+    "filename": "fixture-lorebook.json",
+    "data": {
+      "entries": {
+        "0": {
+          "key": ["fixture"],
+          "content": "Linked source data"
+        }
+      }
+    }
+  },
+  "futureTopLevel": {
+    "preserveMe": true
+  }
+}

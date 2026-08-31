@@ -1,0 +1,37 @@
+{
+  "basic": {
+    "title": "Fixture Three",
+    "subtitle": "Plans and playlists"
+  },
+  "appearance": {
+    "template": "journal",
+    "bannerStyle": "none",
+    "cardStyle": "current",
+    "containerStyle": "left-border",
+    "subcontainerStyle": "soft-bg"
+  },
+  "characters": [],
+  "storylines": [],
+  "plans": [
+    {
+      "title": "Synthetic Arc",
+      "events": [
+        {
+          "title": "Opening",
+          "timing": "Day 1"
+        }
+      ],
+      "subArcs": []
+    }
+  ],
+  "plansOptions": {
+    "selectedTimeSystemId": "default"
+  },
+  "playlists": [
+    {
+      "title": "Fixture Mix",
+      "tracks": []
+    }
+  ],
+  "world": {}
+}

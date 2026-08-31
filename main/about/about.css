@@ -1,0 +1,350 @@
+/* About CSS - Matching Main App Design System */
+
+/* About button in nav - matches existing pattern */
+.about-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    
+    position: absolute;
+    right: var(--space-lg);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 101;
+}
+
+.about-btn:hover {
+    background-color: transparent;
+    color: var(--text-secondary);
+    border-color: transparent;
+}
+
+.about-btn i {
+    font-size: 14px;
+}
+
+/* About Modal - shared visual language with Lore Codex and RP Archiver */
+#about-modal > .about-modal {
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border-primary);
+    width: 90%;
+    max-width: 1000px;
+    height: 80%;
+    max-height: 600px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.about-modal .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--border-primary);
+    background: var(--bg-tertiary);
+    flex-shrink: 0;
+}
+
+.about-modal .modal-header h2 {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    font-family: "Nunito Sans", sans-serif;
+    color: var(--text-primary);
+}
+
+.about-modal .close-btn {
+    background: transparent;
+    border: none;
+    font-size: var(--font-size-lg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color var(--transition-normal), background-color var(--transition-normal);
+    border-radius: var(--radius-sm);
+    padding: var(--space-xs);
+}
+
+.about-modal .close-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-quaternary);
+}
+
+.about-modal .modal-body {
+    padding: 0;
+    overflow: hidden;
+    max-height: none;
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+/* About Sidebar */
+#about-modal .about-sidebar {
+    width: 250px;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-primary);
+    padding: var(--space-lg);
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+#about-modal .about-sidebar h3 {
+    margin: 0 0 var(--space-lg) 0;
+    color: var(--text-primary);
+    font-family: "Nunito Sans", sans-serif;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-secondary);
+    padding-bottom: var(--space-sm);
+    padding-left: var(--space-sm);
+}
+
+/* Table of Contents - matching existing nav patterns */
+#about-modal .toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+#about-modal .toc-item {
+    display: flex;
+    flex-direction: column;
+}
+
+#about-modal .toc-link,
+#about-modal .toc-sublink {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    text-align: left;
+    padding: var(--space-sm);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: color var(--transition-normal), background-color var(--transition-normal);
+    font-family: "Nunito Sans", sans-serif;
+    font-size: var(--font-size-sm);
+}
+
+#about-modal .toc-link {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+#about-modal .toc-sublink {
+    padding-left: var(--space-lg);
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+}
+
+#about-modal .toc-link:hover,
+#about-modal .toc-sublink:hover {
+    background: var(--bg-tertiary);
+    color: var(--accent-primary);
+}
+
+#about-modal .toc-link.active,
+#about-modal .toc-sublink.active {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+}
+
+#about-modal .toc-subsections {
+    display: flex;
+    flex-direction: column;
+    margin-top: var(--space-xs);
+}
+
+/* About Main Content */
+#about-modal .about-main {
+    flex: 1;
+    padding: var(--space-lg);
+    overflow-y: auto;
+    background: var(--bg-primary);
+}
+
+/* About section content */
+#about-modal .about-section h2 {
+    margin: 0 0 var(--space-lg) 0;
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    font-family: "Nunito Sans", sans-serif;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--accent-primary);
+    padding-bottom: var(--space-sm);
+}
+
+#about-modal .about-section h3 {
+    margin: var(--space-lg) 0 var(--space-md) 0;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    font-family: "Nunito Sans", sans-serif;
+    color: var(--text-primary);
+}
+
+#about-modal .about-section p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--space-md);
+    font-size: var(--font-size-base);
+}
+
+#about-modal .about-section p:last-child {
+    margin-bottom: 0;
+}
+
+/* Subsections */
+#about-modal .subsection {
+    margin: var(--space-xl) 0;
+    padding-left: var(--space-lg);
+    border-left: 3px solid var(--accent-primary);
+}
+
+#about-modal .subsection h4 {
+    color: var(--text-primary);
+    font-family: "Nunito Sans", sans-serif;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    margin: 0 0 var(--space-md) 0;
+}
+
+#about-modal .subsection p {
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-size: var(--font-size-base);
+}
+
+/* Tool Cards - simpler grid */
+#about-modal .about-tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-md);
+    margin: var(--space-md) 0;
+}
+
+#about-modal .about-tool-card {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+}
+
+#about-modal .about-tool-card h4 {
+    color: var(--text-labels);
+    font-family: "Nunito Sans", sans-serif;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    margin: 0 0 var(--space-xs) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+#about-modal .about-tool-card p {
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0;
+    font-size: var(--font-size-sm);
+}
+
+/* Tool Icon */
+#about-modal .about-tool-icon {
+    width: 20px;
+    height: 20px;
+    background: var(--accent-primary);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-primary);
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+/* Social Links - matching button styling */
+#about-modal .social-links {
+    display: flex;
+    gap: var(--space-sm);
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: var(--space-md) 0;
+}
+
+#about-modal .social-link {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--accent-primary);
+    border: 1px solid var(--accent-primary);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    font-family: "Quicksand", sans-serif;
+    transition: all var(--transition-normal);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    text-decoration: none;
+}
+
+#about-modal .social-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+    border-color: var(--accent-primary);
+}
+
+#about-modal .social-link:active {
+    transform: translateY(0);
+    background-color: var(--accent-primary);
+    color: var(--bg-primary);
+}
+
+#about-modal .about-section a:not(.social-link) {
+    color: var(--accent-primary);
+    text-decoration: none;
+}
+
+#about-modal .about-section a:not(.social-link):hover {
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .about-modal {
+        width: 98%;
+        height: 90%;
+        max-height: 90vh;
+    }
+    
+    .about-modal .modal-body {
+        flex-direction: column;
+    }
+    
+    #about-modal .about-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-primary);
+        max-height: 40%;
+    }
+    
+    #about-modal .about-tools-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    #about-modal .social-links {
+        flex-direction: column;
+        align-items: center;
+    }
+}

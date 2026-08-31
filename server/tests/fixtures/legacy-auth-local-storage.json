@@ -1,0 +1,15 @@
+{
+  "writingTools_users": {
+    "legacy_fixture_user": {
+      "id": "legacy_fixture_user",
+      "username": "Legacy Fixture",
+      "email": "legacy-fixture@example.invalid",
+      "password": "fixture-only-password",
+      "createdAt": 1700000000000
+    }
+  },
+  "writingTools_preferences": {
+    "theme": "default"
+  },
+  "writingTools_usage": {}
+}

@@ -1,0 +1,51 @@
+{
+  "basic": {
+    "title": "Fixture Four",
+    "subtitle": "Navigation and custom pages",
+    "overviewLinks": [
+      {
+        "label": "Reference",
+        "url": "https://example.invalid/reference"
+      }
+    ],
+    "customNavLinks": [
+      {
+        "label": "Appendix",
+        "target": "appendix"
+      }
+    ],
+    "customNavSettings": {
+      "position": "after-world"
+    },
+    "includedPages": ["overview", "characters", "appendix"]
+  },
+  "appearance": {
+    "template": "journal",
+    "colorScheme": "current",
+    "siteWidth": "wide",
+    "pageHeader": "standard",
+    "worldCategoriesHeader": "default"
+  },
+  "characters": [],
+  "storylines": [],
+  "plans": [],
+  "playlists": [],
+  "customPages": [
+    {
+      "id": "appendix",
+      "name": "Appendix",
+      "template": "article",
+      "elements": [
+        {
+          "type": "text",
+          "content": "Synthetic appendix content"
+        }
+      ]
+    }
+  ],
+  "world": {},
+  "eventsOptions": { "customLabel": "Chronicle" },
+  "cultureOptions": { "customLabel": "Societies" },
+  "cultivationOptions": { "customLabel": "Paths" },
+  "magicOptions": { "customLabel": "Arts" }
+}

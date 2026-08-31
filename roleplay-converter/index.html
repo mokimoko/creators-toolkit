@@ -1,0 +1,730 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <title>RP Archiver</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/content.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="rp-project-styles.css">
+    <link rel="stylesheet" href="user/auth-ui.css">
+    <link rel="stylesheet" href="about/rp-archiver-about.css">
+    <link rel="stylesheet" href="read-through/archiver-read-through.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&amp;family=Libre+Caslon+Display&amp;display=swap">
+    <link rel="stylesheet" href="css/editor-refresh.css">
+    <!-- Add FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
+    <style>
+    /* Prevent flash of unstyled content */
+    body {
+        opacity: 0;
+        transition: opacity 0.1s ease-in;
+    }
+
+    body.theme-loaded {
+        opacity: 1;
+    }
+    </style>
+
+</head>
+<body>
+    <nav class="main-tabs" aria-label="RP Archiver tools">
+        <div class="nav-container">
+            <a href="http://localhost:9000/" class="nav-home-btn" title="Creator's Toolkit home" aria-label="Creator's Toolkit home">
+                <i class="fas fa-home" aria-hidden="true"></i>
+            </a>
+
+            <!-- Import Controls -->
+            <div class="nav-import-controls">
+                <input type="file" id="import-file" class="file-input-hidden" accept=".html,.htm" aria-label="Import roleplay HTML" data-toolkit-file-picker>
+                <button id="import-btn" class="btn-secondary" type="button">
+                    <i class="fas fa-upload" aria-hidden="true"></i> Import HTML
+                </button>
+            </div>
+            <button class="nav-about-btn" id="rp-archiver-about-btn" type="button" title="How to use RP Archiver" aria-label="How to use RP Archiver">
+                <i class="fas fa-question-circle" aria-hidden="true"></i>
+            </button>
+            <button class="nav-user-avatar is-hidden" id="nav-user-avatar" type="button" aria-label="Open user menu">
+                <img src="../main/images/default-avatar.png" alt="User Avatar" class="user-avatar" id="nav-avatar-img">
+            </button>
+            <div id="rp-context-menu" class="user-context-menu is-hidden" role="menu">
+                <button class="context-menu-item" id="rp-logout-option" type="button" role="menuitem">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="info-banner">
+            <img src="images/banner.png" alt="" class="banner-image">
+            <div class="banner-overlay">
+                <div class="banner-lockup">
+                    <h1 class="banner-title metal-text bronze rp-archiver-title">RP Archiver</h1>
+                    <p class="rp-archiver-purpose">Story Formatting</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Layout -->
+        <div class="content-layout">
+            <nav class="content-sidebar" aria-label="Project sections">
+                <div class="sidebar-sections-container">
+                    <div class="sidebar-section">
+                        <div class="section-title">Story Setup</div>
+                        <button type="button" class="sidebar-item active" data-category="story-info" title="Story Information">
+                            <i class="fas fa-file-lines" aria-hidden="true"></i>
+                            <span class="category-name">Story Information</span>
+                        </button>
+                        <button type="button" class="sidebar-item" data-category="characters" title="Characters">
+                            <i class="fas fa-user-group" aria-hidden="true"></i>
+                            <span class="category-name">Characters</span>
+                        </button>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <div class="section-title">Media & Design</div>
+                        <button type="button" class="sidebar-item" data-category="banner" title="Banner">
+                            <i class="fas fa-panorama" aria-hidden="true"></i>
+                            <span class="category-name">Banner</span>
+                        </button>
+                        <button type="button" class="sidebar-item" data-category="media" title="Images &amp; Background">
+                            <i class="fas fa-images" aria-hidden="true"></i>
+                            <span class="category-name">Images & Background</span>
+                        </button>
+                        <button type="button" class="sidebar-item" data-category="soundtrack" title="Soundtrack">
+                            <i class="fas fa-music" aria-hidden="true"></i>
+                            <span class="category-name">Soundtrack</span>
+                        </button>
+                        <button type="button" class="sidebar-item" data-category="navigation" title="Navigation Links">
+                            <i class="fas fa-link" aria-hidden="true"></i>
+                            <span class="category-name">Navigation Links</span>
+                        </button>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <div class="section-title">Content</div>
+                        <button type="button" class="sidebar-item" data-category="text-input" title="Roleplay Text">
+                            <i class="fas fa-feather-pointed" aria-hidden="true"></i>
+                            <span class="category-name">Roleplay Text</span>
+                        </button>
+                        <button type="button" class="sidebar-item" data-category="glossary" title="Glossary">
+                            <i class="fas fa-book" aria-hidden="true"></i>
+                            <span class="category-name">Glossary</span>
+                        </button>
+                        <button type="button" class="sidebar-item" data-category="comments" title="Comments">
+                            <i class="fas fa-comments" aria-hidden="true"></i>
+                            <span class="category-name">Comments</span>
+                        </button>
+                        <button type="button" class="sidebar-item" data-category="generate" title="Preview &amp; Export">
+                            <i class="fas fa-box-archive" aria-hidden="true"></i>
+                            <span class="category-name">Preview &amp; Export</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Collapse button at bottom -->
+                <button id="sidebar-collapse-btn" title="Collapse sidebar" aria-label="Collapse sidebar" aria-expanded="true">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            </nav>
+
+            <!-- Main Content Area -->
+            <div class="content-main">
+                <div class="mobile-section-nav">
+                    <label for="mobile-section-picker">Project section</label>
+                    <select id="mobile-section-picker">
+                        <option value="story-info">Story Information</option>
+                        <option value="characters">Characters</option>
+                        <option value="banner">Banner</option>
+                        <option value="media">Images &amp; Background</option>
+                        <option value="soundtrack">Soundtrack</option>
+                        <option value="navigation">Navigation Links</option>
+                        <option value="text-input">Roleplay Text</option>
+                        <option value="glossary">Glossary</option>
+                        <option value="comments">Comments</option>
+                        <option value="generate">Preview &amp; Export</option>
+                    </select>
+                </div>
+                <!-- Story Information Section -->
+                <div id="story-info-section" class="content-section active">
+                    <div class="section-header">
+                        <h3>Story Information</h3>
+                    </div>
+                    <div class="section-content">
+                        <!-- Title and Subtitle Row -->
+                        <div class="form-row">
+                            <div>
+                                <label for="title">Story Title:</label>
+                                <input type="text" id="title" placeholder="Enter story title">
+                            </div>
+                            <div>
+                                <label for="subtitle">Subtitle:</label>
+                                <input type="text" id="subtitle" placeholder="A Universe Story" value="A Universe Story">
+                            </div>
+                        </div>
+                        
+                        <!-- Description (full width) -->
+                        <label for="description">Description:</label>
+                        <textarea id="description" rows="4" placeholder="Enter a brief description of your story"></textarea>
+                        
+                        <!-- Universe and Pairing Row -->
+                        <div class="form-row">
+                            <div>
+                                <label for="universe">Universe:</label>
+                                <input type="text" id="universe" placeholder="Enter universe name">
+                            </div>
+                            <div>
+                                <label for="pairing">Pairing:</label>
+                                <input type="text" id="pairing" placeholder="Character1/Character2">
+                            </div>
+                        </div>
+                        
+                        <div class="helper-text helper-text-tight">
+                            If Universe is the same as a Lore Codex Project name, you can access this roleplay after saving in the Lore Codex Storylines modal.
+                        </div>
+                        
+                        <!-- Last Updated and Status Row -->
+                        <div class="form-row">
+                            <div>
+                                <label for="date">Last Updated:</label>
+                                <input type="text" id="date" placeholder="Month Day, Year">
+                            </div>
+                            <div>
+                                <label for="status">Status:</label>
+                                <select id="status">
+                                    <option value="Ongoing">Ongoing</option>
+                                    <option value="Complete">Complete</option>
+                                    <option value="Hiatus">Hiatus</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Characters Section -->
+                <div id="characters-section" class="content-section">
+                    <div class="section-header">
+                        <h3>Characters</h3>
+                        <button id="add-character" class="btn-add">+ Add Character</button>
+                    </div>
+                    <div class="section-content">
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="no-characters">
+                            <label for="no-characters" class="checkbox-label">No character names (for oneshots/narratives)</label>
+                        </div>
+
+                        <div class="section-header-with-import">
+                            <h4>Characters:</h4>
+                        </div>
+                        
+                        <div id="characters-container">
+                            <!-- Characters will be added here dynamically -->
+                        </div>
+                        
+                        <div class="helper-text">
+                            Character names can be multiple words (e.g., "John Smith", "Mary Jane Watson")
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Section -->
+                <div id="banner-section" class="content-section">
+                    <div class="section-header">
+                        <h3>Banner</h3>
+                    </div>
+                    <div class="section-content">
+                        <!-- Two Column Layout -->
+                        <div class="two-column-layout">
+                            <!-- Left Column: Title & Subtitle Options + Font Controls -->
+                            <div class="column-left">
+                                <h4 class="subsection-heading">Title & Subtitle</h4>
+                                
+                                <div class="checkbox-container">
+                                    <input type="checkbox" id="show-title" checked>
+                                    <label for="show-title" class="checkbox-label">Show story title</label>
+                                </div>
+                                
+                                <div class="checkbox-container">
+                                    <input type="checkbox" id="show-subtitle" checked>
+                                    <label for="show-subtitle" class="checkbox-label">Show subtitle ("A [Universe] Story")</label>
+                                </div>
+                                
+                                <label for="title-font-size-banner" class="control-label-spaced">Title Font Size:</label>
+                                <div class="range-control">
+                                    <input type="range" id="title-font-size-banner" min="24" max="48" value="32">
+                                    <output id="title-font-size-banner-value" for="title-font-size-banner">32px</output>
+                                </div>
+                                
+                                <div class="color-control-group">
+                                    <label for="title-font-color">Title Font Color:</label>
+                                    <div class="color-input-row">
+                                        <input type="text" id="title-font-color" value="#ffffff">
+                                        <input type="color" id="title-font-color-picker" value="#ffffff" aria-label="Choose title font color">
+                                    </div>
+                                </div>
+                                
+                                <div class="color-control-group">
+                                    <label for="subtitle-font-color">Subtitle Font Color:</label>
+                                    <div class="color-input-row">
+                                        <input type="text" id="subtitle-font-color" value="#cccccc">
+                                        <input type="color" id="subtitle-font-color-picker" value="#cccccc" aria-label="Choose subtitle font color">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Banner Image, Size, and Tips -->
+                            <div class="column-right">
+                                <div class="section-header-with-import">
+                                    <h4>Banner Image</h4>
+                                    <button type="button" id="banner-image-browse" class="btn-secondary" title="Browse for Banner Image">
+                                        <i class="fas fa-upload"></i>
+                                    </button>
+                                </div>
+                                <div class="helper-text">
+                                    Optional banner image for the story header.
+                                </div>
+
+                                <input type="file" id="banner-image-file" class="file-input-hidden" accept=".png,.jpg,.jpeg,.webp,.gif,.avif,.bmp" aria-label="Choose banner image" data-toolkit-file-picker>
+                                <div id="banner-image-display" class="file-display banner-display"></div>
+                                
+                                <label for="banner-size" class="control-label-spaced">Banner Size:</label>
+                                <select id="banner-size">
+                                    <option value="small">Small (80px height)</option>
+                                    <option value="medium" selected>Medium (120px height)</option>
+                                    <option value="large">Large (160px height)</option>
+                                </select>
+                                
+                                <h4 class="tips-heading">Tips:</h4>
+                                <div class="helper-text helper-text-reset">
+                                    <p>• Banner image displayed at full width</p>
+                                    <p>• Title/subtitle overlaid on banner</p>
+                                    <p>• Choose contrasting colors</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Media Section -->
+                <div id="media-section" class="content-section">
+                    <div class="section-header">
+                        <h3>Images & Background</h3>
+                    </div>
+                    <div class="section-content">
+                        <!-- Story Images (full width) -->
+                        <div class="section-header-with-import">
+                            <h4>Story Images</h4>
+                            <button type="button" id="story-images-browse" class="btn-secondary" title="Browse for Story Images">
+                                <i class="fas fa-upload"></i>
+                            </button>
+                        </div>
+                        <div class="helper-text">
+                            Images will be resized to 300x200 and displayed in order in the output file. Select images from your computer - they'll be automatically saved with your roleplay.
+                        </div>
+
+                        <input type="file" id="story-images-file" class="file-input-hidden" accept=".png,.jpg,.jpeg,.webp,.gif,.avif,.bmp" multiple aria-label="Choose story images" data-toolkit-file-picker>
+                        <div id="story-images-display" class="file-display">
+                            <div id="images-container">
+                                <!-- Image entries will be added here dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- Two Column Layout for Background -->
+                        <div class="two-column-layout two-column-layout-spaced">
+                            <!-- Left Column: Background Image -->
+                            <div class="column-left">
+                                <div class="section-header-with-import">
+                                    <h4>Background Image</h4>
+                                    <button type="button" id="background-image-browse" class="btn-secondary" title="Browse for Background Image">
+                                        <i class="fas fa-upload"></i>
+                                    </button>
+                                </div>
+                                <div class="helper-text">
+                                    Optional background image for the entire page. Will be blurred and dimmed to not interfere with text readability.
+                                </div>
+
+                                <input type="file" id="background-image-file" class="file-input-hidden" accept=".png,.jpg,.jpeg,.webp,.gif,.avif,.bmp" aria-label="Choose background image" data-toolkit-file-picker>
+                                <div id="background-image-display" class="file-display background-display"></div>
+                            </div>
+
+                            <!-- Right Column: Opacity, Blur, CSS Template -->
+                            <div class="column-right">
+                                <label for="background-opacity">Opacity (0-100%):</label>
+                                <div class="range-control">
+                                    <input type="range" id="background-opacity" min="0" max="100" value="20">
+                                    <output id="opacity-value" for="background-opacity">20%</output>
+                                </div>
+                                
+                                <label for="background-blur">Blur Amount (0-20px):</label>
+                                <div class="range-control">
+                                    <input type="range" id="background-blur" min="0" max="20" value="5">
+                                    <output id="blur-value" for="background-blur">5px</output>
+                                </div>
+                                
+                                <label for="css-template">CSS Template:</label>
+                                <select id="css-template" class="compact-select">
+                                    <option value="generated.css">Default</option>
+                                    <!-- Template options will be populated by JavaScript -->
+                                </select>
+                                <div class="helper-text helper-text-after-control">
+                                    Choose a CSS template for styling your roleplay. Templates are loaded from the templates folder.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Soundtrack Section -->
+                <div id="soundtrack-section" class="content-section">
+                    <div class="section-header">
+                        <h3>Soundtrack</h3>
+                        <div class="header-buttons">
+                            <button id="add-track-heading" class="btn-add">+ Add Section Heading</button>
+                            <button id="add-track" class="btn-add">+ Add Track</button>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="helper-text">
+                            Add music tracks that complement your story. These will appear in a soundtrack panel in the final HTML.
+                        </div>
+                        
+                        <div id="soundtrack-container">
+                            <!-- Track entries will be added here dynamically -->
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <!-- Navigation Section -->
+                <div id="navigation-section" class="content-section">
+                    <div class="section-header">
+                        <h3>Navigation Links</h3>
+                        <button id="add-navigation" class="btn-add">+ Add Navigation Link</button>
+                    </div>
+                    <div class="section-content">
+                        <div class="helper-text">
+                            Customize the navigation links at the top of your HTML file. Common examples: Home (../index.html), Archive (../archive.html), About (../about.html)
+                        </div>
+                        
+                        <div id="navigation-container">
+                            <!-- Navigation entries will be added here dynamically -->
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <!-- Text Input Section -->
+                <div id="text-input-section" class="content-section">
+                    <div class="section-header">
+                        <h3>Roleplay Text</h3>
+                        <button id="add-part" class="btn-add">+ Add Part</button>
+                    </div>
+                    <div class="section-content">
+                        <div class="parts-editor-intro">
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="single-story">
+                            <label for="single-story" class="checkbox-label">Continuous story layout (no part headings or table of contents)</label>
+                        </div>
+                        <details class="advanced-content-options">
+                            <summary>Advanced content options</summary>
+                            <div class="checkbox-container">
+                                <input type="checkbox" id="allow-raw-html">
+                                <label for="allow-raw-html" class="checkbox-label">Allow sanitized HTML in story text</label>
+                            </div>
+                            <div class="helper-text">Scripts, event handlers, embedded pages, forms, and inline styles are removed. Preview execution remains isolated.</div>
+                        </details>
+                            <button type="button" id="convert-legacy-markers" class="btn-secondary">Convert legacy markers</button>
+                        </div>
+                        <input type="checkbox" id="use-part-markers" hidden aria-hidden="true">
+                        <div id="parts-container" aria-live="polite">
+                            <!-- Structured part editors are added here dynamically -->
+                        </div>
+
+                        <div class="roleplay-text-help">
+                            <div class="helper-text">
+                                <p>• Text should start with "Character Name:" to identify speakers (multi-word names are supported)</p>
+                                <p>• Use <strong>Insert part break at cursor</strong> to divide pasted text</p>
+                                <p>• You can use markdown formatting: **bold**, *italic*, ~~strikethrough~~</p>
+                                <p>• For linked footnotes, place a superscript number like <strong>¹</strong> in the text, then end the story with <strong>**Footnotes**</strong> and a line beginning with the same number</p>
+                            </div>
+                            <div>
+                                <input type="file" id="chat-file-upload" class="file-input-hidden" accept=".txt,.jsonl" aria-label="Import SillyTavern chat file" data-toolkit-file-picker>
+                                <button type="button" id="chat-upload-btn" class="btn-secondary" title="Upload SillyTavern chat file">
+                                    <i class="fas fa-file-upload button-leading-icon" aria-hidden="true"></i> Import Chat
+                                </button>
+                            </div>
+                        </div>
+
+                        <details class="plain-text-compatibility">
+                            <summary>Plain-text compatibility</summary>
+                            <p class="helper-text">This derived view is available for older tools and manual exports. It is not the project’s editable source of truth.</p>
+                            <label class="checkbox-label plain-text-marker-option">
+                                <input type="checkbox" id="plain-text-include-markers" checked>
+                                Include readable &amp;&amp;&amp;PART&amp;&amp;&amp; delimiters
+                            </label>
+                            <label for="rp-text">Plain-text export</label>
+                            <textarea id="rp-text" rows="8" readonly></textarea>
+                            <button type="button" id="copy-plain-text" class="btn-secondary">Copy plain text</button>
+                        </details>
+                        
+                        <div class="word-count-info">
+                            <span id="word-count">Words: 0</span>
+                            <span id="page-count">Pages: 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Glossary Section -->
+                <div id="glossary-section" class="content-section">
+                    <div class="section-header">
+                        <h3>Glossary</h3>
+                        <button id="add-glossary-entry" class="btn-add">+ Add Entry</button>
+                    </div>
+                    <div class="section-content">
+                        <div class="helper-text">
+                            Add terms and definitions that will be linked throughout your story. Matched terms will be subtly underlined and linked to definitions.
+                        </div>
+                        
+                        <!-- Glossary Options -->
+                        <div class="options-panel">
+                            <h4>Display Options:</h4>
+                            
+                            <div class="checkbox-container">
+                                <input type="checkbox" id="glossary-first-only">
+                                <label for="glossary-first-only" class="checkbox-label">Only underline first instance of each term</label>
+                            </div>
+                            
+                            <div class="checkbox-container">
+                                <input type="checkbox" id="glossary-show-tooltips">
+                                <label for="glossary-show-tooltips" class="checkbox-label">Show definition tooltips on hover</label>
+                            </div>
+                            
+                            <div class="checkbox-container">
+                                <input type="checkbox" id="glossary-show-section" checked>
+                                <label for="glossary-show-section" class="checkbox-label">Show full glossary section at end of story</label>
+                            </div>
+                        </div>
+                        
+                        <div class="section-header-with-import">
+                            <h4>Glossary Entries:</h4>
+                        </div>
+                        
+                        <div id="glossary-container">
+                            <!-- Glossary entries will be added here dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comments Section -->
+                <div id="comments-section" class="content-section">
+                    <div class="section-header">
+                        <h3>Comments</h3>
+                        <div class="header-buttons">
+                            <button id="add-comment-heading" class="btn-add">+ Add Section Heading</button>
+                            <button id="add-comment" class="btn-add">+ Add Comment</button>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <section class="read-through-setup" aria-labelledby="read-through-heading">
+                            <div class="read-through-intro">
+                                <div class="read-through-monogram" aria-hidden="true">¶</div>
+                                <div>
+                                    <div class="read-through-eyebrow">Shared margin notes</div>
+                                    <h4 id="read-through-heading">Read-Through Mode</h4>
+                                    <p>Let readers leave colored comment threads and suggest text corrections directly on the hosted story.</p>
+                                </div>
+                                <label class="read-through-switch">
+                                    <input type="checkbox" id="read-through-enabled">
+                                    <span aria-hidden="true"></span>
+                                    <b>Enable</b>
+                                </label>
+                            </div>
+
+                            <div id="read-through-settings" class="read-through-settings" data-enabled="false">
+                                <div class="form-row">
+                                    <div>
+                                        <label for="read-through-linked-url">Hosted story URL</label>
+                                        <input type="url" id="read-through-linked-url" placeholder="https://example.netlify.app/roleplays/story.html">
+                                    </div>
+                                    <div>
+                                        <label for="read-through-endpoint">Comment service path</label>
+                                        <input type="text" id="read-through-endpoint" value="/api/read-through/comments">
+                                    </div>
+                                </div>
+                                <input type="hidden" id="read-through-document-id">
+                                <textarea id="read-through-cache-data" hidden aria-hidden="true">[]</textarea>
+                                <div class="read-through-actions">
+                                    <button type="button" id="read-through-sync" class="btn-secondary">
+                                        <i class="fas fa-rotate"></i> Sync comments
+                                    </button>
+                                    <button type="button" id="read-through-open" class="btn-secondary" disabled>
+                                        <i class="fas fa-arrow-up-right-from-square"></i> Open page
+                                    </button>
+                                    <span id="read-through-status" class="read-through-status" data-state="idle">Not linked yet</span>
+                                </div>
+                                <div id="read-through-summary" class="read-through-summary" hidden>
+                                    <div><strong id="read-through-total">0</strong><span>notes</span></div>
+                                    <div><strong id="read-through-open-count">0</strong><span>open</span></div>
+                                    <div><strong id="read-through-corrections">0</strong><span>corrections</span></div>
+                                    <div><strong id="read-through-replies">0</strong><span>replies</span></div>
+                                </div>
+                                <div id="read-through-comment-list" class="read-through-comment-list"></div>
+                                <div class="read-through-footnote">
+                                    The hosted URL is only needed for syncing inside RP Archiver. The generated page uses the service on its own host.
+                                </div>
+                            </div>
+                        </section>
+
+                        <div class="author-comments-divider">
+                            <span>Permanent author comments</span>
+                        </div>
+                        <div class="helper-text">
+                            Add author comments or notes about your story. These will appear in a comments panel in the final HTML. Format: Start each comment with "comment:" followed by your text. Comments can be multiple lines.
+                        </div>
+                        
+                        <div id="comments-container">
+                            <!-- Comment entries will be added here dynamically -->
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <div id="generate-section" class="content-section">
+                    <div class="section-header">
+                        <h3>Preview &amp; Export</h3>
+                    </div>
+                    <div class="section-content">
+                        <div class="export-intro">
+                            <div>
+                                <span class="export-eyebrow">Final review</span>
+                                <p>Generate the reading view, check it here, then save it to the Toolkit or export a standalone HTML file.</p>
+                            </div>
+                        </div>
+                        <div class="generate-controls">
+                            <button id="convert-btn" class="btn-main-action" type="button">
+                                <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
+                                Generate preview
+                            </button>
+                            <button id="save-project-btn" class="btn-secondary btn-save-project" type="button" disabled>
+                                <i class="fas fa-box-archive" aria-hidden="true"></i>
+                                Save project
+                            </button>
+                            <button id="update-lore-copy-btn" class="btn-secondary btn-update-lore" type="button" hidden disabled>
+                                <i class="fas fa-book-open" aria-hidden="true"></i>
+                                <span>Update Lore Codex copy</span>
+                            </button>
+                            <button id="export-html-btn" class="btn-secondary btn-export-html" type="button" disabled>
+                                <i class="fas fa-file-export" aria-hidden="true"></i>
+                                Export HTML
+                            </button>
+                        </div>
+
+                        <div id="status-container" class="status-container" role="status" aria-live="polite"></div>
+                        <div id="save-fallback" class="save-fallback" hidden>
+                            <span>The Toolkit copy was not saved. You can download the generated HTML instead.</span>
+                            <button id="download-fallback-btn" class="btn-secondary" type="button">
+                                <i class="fas fa-download" aria-hidden="true"></i>
+                                Download instead
+                            </button>
+                        </div>
+
+                        <div class="tabs" role="tablist" aria-label="Export view">
+                            <button type="button" class="tab active" id="preview-tab" data-tab="preview" role="tab" aria-selected="true" aria-controls="preview-content">Preview</button>
+                            <button type="button" class="tab" id="html-tab" data-tab="html" role="tab" aria-selected="false" aria-controls="html-content">Advanced / Code</button>
+                        </div>
+
+                        <div class="tab-content active" id="preview-content" role="tabpanel" aria-labelledby="preview-tab">
+                            <div class="preview-container">
+                                <iframe id="preview-frame" title="Generated roleplay preview" sandbox="allow-scripts"></iframe>
+                            </div>
+                        </div>
+
+                        <div class="tab-content" id="html-content" role="tabpanel" aria-labelledby="html-tab" hidden>
+                            <div class="code-toolbar">
+                                <div>
+                                    <strong>Generated HTML</strong>
+                                    <span>Advanced output for manual inspection or another publishing workflow.</span>
+                                </div>
+                                <button id="copy-btn" class="btn-secondary" type="button" disabled>
+                                    <i class="fas fa-copy" aria-hidden="true"></i>
+                                    Copy HTML
+                                </button>
+                            </div>
+                            <label class="visually-hidden" for="html-output">Generated HTML code</label>
+                            <textarea id="html-output" readonly rows="15" placeholder="Generate a preview to create HTML."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Text Editor Modal -->
+    <div id="textEditorModal" class="text-editor-modal" role="dialog" aria-modal="true" aria-labelledby="text-editor-title">
+        <div class="text-editor-modal-content">
+            <div class="text-editor-header">
+                <h3 id="text-editor-title">Roleplay Text Editor</h3>
+                <button class="text-editor-close" id="closeTextEditor" type="button" title="Close editor" aria-label="Close roleplay text editor">&times;</button>
+            </div>
+            <label class="visually-hidden" for="expanded-rp-text">Roleplay text</label>
+            <textarea id="expanded-rp-text" placeholder="Paste your roleplay text here..."></textarea>
+            <div class="text-editor-footer">
+                <div class="word-count-info">
+                    <span id="modal-word-count">Words: 0</span>
+                    <span id="modal-page-count">Pages: 0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Context Menu for Color Pickers -->
+    <div id="color-picker-context-menu" class="context-menu is-hidden">
+        <div class="context-menu-item">
+            <label class="visually-hidden" for="color-hex-input">Hex color</label>
+            <input type="text" id="color-hex-input" placeholder="#000000" maxlength="7">
+        </div>
+        <div class="context-menu-item" id="apply-hex-color">
+            <i class="fas fa-check"></i> Apply
+        </div>
+    </div>
+
+    <!-- Include all JavaScript files -->
+    <script src="../utils/file-picker.js"></script>
+    <script src="modules/app.js"></script>
+    <script src="modules/logger.js"></script>
+    <script src="modules/security.js"></script>
+    <script src="modules/project-state.js"></script>
+    <script src="modules/generated-template.js"></script>
+    <script src="modules/editor-dom.js"></script>
+    <script src="user/auth-ui.js"></script>
+    <script src="user/user-session.js"></script>
+    <script src="about/rp-archiver-about.js"></script>
+    <script src="modules/color-copy.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="converter.js"></script>
+    <script src="parser.js"></script>
+    <script src="form-handlers.js"></script>
+    <script src="read-through/archiver-read-through.js"></script>
+    <script src="modules/schema-migrations.js"></script>
+    <script src="modules/project-data.js"></script>
+    <script src="modules/media-assets.js"></script>
+    <script src="modules/form-binding.js"></script>
+    <script src="modules/legacy-import.js"></script>
+    <script src="modules/read-through-integration.js"></script>
+    <script src="html-generator.js"></script>
+    <script src="modules/save-export.js"></script>
+    <script src="modules/preview-export.js"></script>
+    <script src="import-export.js"></script>
+    <script src="main.js"></script>
+    <script src="rp-project-loader.js"></script>
+    <script src="themes/theme-manager.js"></script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>RP Archiver structured import smoke test</title>
+</head>
+<body>
+    <pre id="result">pending</pre>
+    <script>
+        window.RPLogger = { debug() {}, warn() {}, error() {} };
+        window.showStatusMessage = function showStatusMessage(message) { window.lastStatus = message; };
+        window.updateWordCount = function updateWordCount() {};
+
+        function control(tag, id, type) {
+            const element = document.createElement(tag);
+            element.id = id;
+            if (type) element.type = type;
+            document.body.appendChild(element);
+            return element;
+        }
+
+        [
+            'title', 'subtitle', 'description', 'universe', 'pairing', 'date', 'rp-text',
+            'background-opacity', 'background-blur', 'banner-size', 'title-font-size-banner',
+            'title-font-color', 'title-font-color-picker', 'subtitle-font-color',
+            'subtitle-font-color-picker', 'read-through-document-id', 'read-through-linked-url',
+            'read-through-endpoint', 'read-through-cache-data'
+        ].forEach(id => control(id.includes('description') || id.includes('rp-text') || id.includes('cache') ? 'textarea' : 'input', id));
+        [
+            'single-story', 'use-part-markers', 'no-characters', 'glossary-first-only',
+            'glossary-show-tooltips', 'glossary-show-section', 'show-title', 'show-subtitle',
+            'read-through-enabled'
+        ].forEach(id => control('input', id, 'checkbox'));
+        ['characters-container', 'parts-container', 'soundtrack-container', 'comments-container',
+            'navigation-container', 'glossary-container', 'background-image-display',
+            'banner-image-display', 'images-container'].forEach(id => control('div', id));
+        ['opacity-value', 'blur-value', 'title-font-size-banner-value'].forEach(id => control('span', id));
+        control('button', 'add-character');
+
+        const status = control('select', 'status');
+        ['Ongoing', 'Complete', 'Hiatus'].forEach(value => status.append(new Option(value, value)));
+        const template = control('select', 'css-template');
+        template.append(new Option('Default', 'generated.css'), new Option('Fixture', 'generated-7.css'));
+
+        window.addCharacter = function addCharacter(name, color) {
+            const row = document.createElement('div');
+            row.className = 'character-info';
+            row.innerHTML = `<input class="char-name"><input class="char-color">`;
+            row.querySelector('.char-name').value = name;
+            row.querySelector('.char-color').value = color;
+            document.getElementById('characters-container').append(row);
+        };
+        window.addPart = function addPart(title) {
+            const row = document.createElement('div');
+            row.innerHTML = '<input class="part-title">';
+            row.querySelector('input').value = title;
+            document.getElementById('parts-container').append(row);
+        };
+        window.addTrackHeading = item => appendValue('soundtrack-container', 'track-heading-title', item);
+        window.addTrack = (name, url) => appendPair('soundtrack-container', 'track-name', name, 'track-link', url);
+        window.addCommentHeading = item => appendValue('comments-container', 'comment-heading-title', item);
+        window.addComment = item => appendValue('comments-container', 'comment-text', item, 'textarea');
+        window.addNavigation = (label, url) => appendPair('navigation-container', 'nav-label', label, 'nav-url', url);
+        window.addGlossaryEntry = (term, definition) => appendPair('glossary-container', 'glossary-term', term, 'glossary-definition', definition);
+
+        function appendValue(containerId, className, value, tag = 'input') {
+            const row = document.createElement('div');
+            const input = document.createElement(tag);
+            input.className = className;
+            input.value = value;
+            row.append(input);
+            document.getElementById(containerId).append(row);
+        }
+        function appendPair(containerId, firstClass, firstValue, secondClass, secondValue) {
+            const row = document.createElement('div');
+            const first = document.createElement('input');
+            const second = document.createElement('input');
+            first.className = firstClass;
+            first.value = firstValue;
+            second.className = secondClass;
+            second.value = secondValue;
+            row.append(first, second);
+            document.getElementById(containerId).append(row);
+        }
+    </script>
+    <script src="../modules/app.js"></script>
+    <script src="../modules/schema-migrations.js"></script>
+    <script src="../modules/project-data.js"></script>
+    <script src="../modules/media-assets.js"></script>
+    <script src="../modules/form-binding.js"></script>
+    <script src="../modules/legacy-import.js"></script>
+    <script src="../import-export.js"></script>
+    <script>
+        let importedReadThrough = null;
+        document.addEventListener('rp-read-through-import', event => {
+            importedReadThrough = event.detail.project.readThrough;
+        });
+
+        const projectData = window.RPArchiver.get('projectData');
+        const project = projectData.createDefaultProject();
+        project.story = {
+            title: 'Structured Smoke', subtitle: 'Browser Harness', description: 'Synthetic only',
+            universe: 'Compatibility Lab', pairing: 'A+B/李雷', updated: 'August 28, 2026', status: 'Complete'
+        };
+        project.characters = [
+            { id: 'character-1', name: 'A+B', color: '#123456' },
+            { id: 'character-2', name: '李雷', color: '#abcdef' }
+        ];
+        project.parts = [
+            { id: 'part-1', title: 'One', entries: [] },
+            { id: 'part-2', title: 'Two', entries: [] }
+        ];
+        project.editor.sourceText = 'A+B: Exact **source**.\n\n&&&PART&&&\n\n李雷: 第二部分。';
+        project.comments = [{ type: 'comment', text: 'comment: Exact note.' }];
+        project.readThrough = {
+            enabled: true, documentId: 'rp_smoke', hostedUrl: 'https://example.test/story.html',
+            endpoint: '/api/read-through/comments', cachedThreads: [{ id: 'thread-1' }]
+        };
+        project.appearance.template = 'generated-7.css';
+
+        try {
+            const html = projectData.injectProjectData('<!doctype html><html><head></head><body></body></html>', project);
+            const report = window.RPArchiver.get('importController').importRoleplayHTML(html, 'synthetic fixture');
+            const result = {
+                ok: true,
+                report: { sourceFormat: report.sourceFormat, schemaVersion: report.schemaVersion },
+                title: document.getElementById('title').value,
+                universe: document.getElementById('universe').value,
+                sourceText: document.getElementById('rp-text').value,
+                characters: Array.from(document.querySelectorAll('.char-name')).map(item => item.value),
+                parts: Array.from(document.querySelectorAll('.part-title')).map(item => item.value),
+                comment: document.querySelector('.comment-text')?.value,
+                template: document.getElementById('css-template').value,
+                readThrough: importedReadThrough,
+                status: window.lastStatus
+            };
+            document.getElementById('result').textContent = JSON.stringify(result, null, 2);
+            document.body.dataset.testState = 'passed';
+        } catch (error) {
+            document.getElementById('result').textContent = error.stack || error.message;
+            document.body.dataset.testState = 'failed';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{
+  "name": "creators-toolkit-server",
+  "version": "4.0.0",
+  "description": "Server for Writing Tools - Lore Codex and RP Archiver",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test:cowriter": "node --test tests/cowriter-chat-persistence.test.js tests/cowriter-key-store.test.js tests/cowriter-local-boundary.test.js tests/cowriter-markdown-security.test.js tests/cowriter-migrations.test.js tests/cowriter-provider-adapters.test.js tests/cowriter-provider-credentials.test.js tests/cowriter-provider-errors.test.js tests/cowriter-prompt-builder.test.js tests/cowriter-schemas.test.js tests/cowriter-security.test.js",
+    "test:notebook": "node --test tests/notebook-collection-model.test.js tests/notebook-collection-storage.test.js tests/notebook-export-service.test.js tests/notebook-markdown-security.test.js tests/notebook-migrations.test.js tests/notebook-save-queue.test.js tests/notebook-schemas.test.js tests/notebook-security.test.js",
+    "test:foundation": "node --test tests/toolkit-session-foundation.test.js tests/main-shell-bootstrap.test.js tests/account-preferences-phase4.test.js tests/site-catalog-phase5.test.js tests/shell-ui-phase6.test.js tests/server-boundaries-phase7.test.js",
+    "migrate:notebook-default-collections": "node scripts/migrate-notebook-default-collections.js",
+    "migrate:cowriter-chat-settings": "node scripts/migrate-cowriter-chat-settings.js",
+    "migrate:cowriter-key-store": "node scripts/migrate-cowriter-key-store.js",
+    "bundle": "node ../utils/bundle-templates.js bundle",
+    "bundle:dev": "node ../utils/bundle-templates.js dev",
+    "bundle:status": "node ../utils/bundle-templates.js status",
+    "bundle:debug": "node ../utils/bundle-templates.js debug"
+  },
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dompurify": "^3.4.14",
+    "express": "^4.22.2",
+    "fs-extra": "^11.4.0",
+    "multer": "^2.3.0",
+    "png-chunk-text": "^1.0.0",
+    "png-chunks-encode": "^1.0.0",
+    "png-chunks-extract": "^1.0.0",
+    "sharp": "^0.34.5"
+  },
+  "keywords": [
+    "writing",
+    "tools",
+    "roleplay",
+    "creator",
+    "worldbuilding",
+    "converter"
+  ],
+  "author": "Mokimoko",
+  "license": "MIT",
+  "devDependencies": {
+    "jsdom": "^29.1.1"
+  }
+}

@@ -1,0 +1,781 @@
+/* CoWriter control, accessibility, and responsive alignment layer. */
+
+#cowriter-content,
+.cowriter-modal,
+#cowriter-settings-modal,
+#custom-prompt-edit-modal,
+#add-name-modal,
+#world-context-modal,
+#save-chat-modal,
+#load-chat-modal,
+#overwrite-confirm-modal {
+    --cw-button-font: "Lato", "Nunito Sans", sans-serif;
+    --cw-button-surface: color-mix(in srgb, var(--bg-tertiary) 86%, var(--bg-secondary));
+    --cw-button-hover: color-mix(in srgb, var(--bg-quaternary) 88%, var(--accent-primary));
+    --cw-button-border: var(--border-secondary);
+    --cw-button-border-hover: color-mix(in srgb, var(--accent-primary) 58%, var(--border-secondary));
+    --cw-focus-ring: color-mix(in srgb, var(--accent-primary) 38%, transparent);
+}
+
+#cowriter-content :where(button, input, select, textarea),
+:where(
+    .cowriter-modal,
+    #cowriter-settings-modal,
+    #custom-prompt-edit-modal,
+    #add-name-modal,
+    #world-context-modal,
+    #save-chat-modal,
+    #load-chat-modal,
+    #overwrite-confirm-modal
+) :where(button, input, select, textarea) {
+    transition-property: color, background-color, border-color, box-shadow, opacity;
+    transition-duration: var(--transition-normal);
+    transition-timing-function: ease;
+}
+
+#cowriter-content :where(button, input, select, textarea):focus-visible,
+:where(
+    .cowriter-modal,
+    #cowriter-settings-modal,
+    #custom-prompt-edit-modal,
+    #add-name-modal,
+    #world-context-modal,
+    #save-chat-modal,
+    #load-chat-modal,
+    #overwrite-confirm-modal
+) :where(button, input, select, textarea):focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px var(--cw-focus-ring);
+}
+
+/* Match Lore Codex's calm controls: hover/press feedback must not move buttons. */
+#cowriter-content button:hover,
+#cowriter-content button:active,
+:where(
+    .cowriter-modal,
+    #cowriter-settings-modal,
+    #custom-prompt-edit-modal,
+    #add-name-modal,
+    #world-context-modal,
+    #save-chat-modal,
+    #load-chat-modal,
+    #overwrite-confirm-modal
+) button:hover,
+:where(
+    .cowriter-modal,
+    #cowriter-settings-modal,
+    #custom-prompt-edit-modal,
+    #add-name-modal,
+    #world-context-modal,
+    #save-chat-modal,
+    #load-chat-modal,
+    #overwrite-confirm-modal
+) button:active {
+    transform: none;
+}
+
+.quick-prompt-item:focus-visible {
+    position: relative;
+    z-index: 1;
+    outline-offset: -3px;
+}
+
+#cowriter-content button,
+:where(
+    .cowriter-modal,
+    #cowriter-settings-modal,
+    #custom-prompt-edit-modal,
+    #add-name-modal,
+    #world-context-modal,
+    #save-chat-modal,
+    #load-chat-modal,
+    #overwrite-confirm-modal
+) button {
+    min-height: 32px;
+    border-radius: 4px;
+    font-family: var(--cw-button-font);
+    font-weight: 500;
+    letter-spacing: 0.005em;
+}
+
+#cowriter-content :where(.btn-secondary, .cowriter-btn, .cowriter-about-btn, .btn-prompt-action, .message-action-btn, .message-edit-btn),
+:where(
+    .cowriter-modal,
+    #cowriter-settings-modal,
+    #custom-prompt-edit-modal,
+    #add-name-modal,
+    #world-context-modal,
+    #save-chat-modal,
+    #load-chat-modal,
+    #overwrite-confirm-modal
+) :where(.btn-secondary, .close-btn, .cowriter-modal-close) {
+    background: var(--cw-button-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--cw-button-border);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.035);
+}
+
+#cowriter-content :where(.btn-secondary, .cowriter-btn, .cowriter-about-btn, .btn-prompt-action, .message-action-btn, .message-edit-btn):hover,
+:where(
+    .cowriter-modal,
+    #cowriter-settings-modal,
+    #custom-prompt-edit-modal,
+    #add-name-modal,
+    #world-context-modal,
+    #save-chat-modal,
+    #load-chat-modal,
+    #overwrite-confirm-modal
+) :where(.btn-secondary, .close-btn, .cowriter-modal-close):hover {
+    transform: none;
+    background: var(--cw-button-hover);
+    color: var(--text-primary);
+    border-color: var(--cw-button-border-hover);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.05);
+}
+
+#cowriter-content :where(.btn-primary, .btn-add-prompt, .send-btn),
+:where(
+    .cowriter-modal,
+    #cowriter-settings-modal,
+    #custom-prompt-edit-modal,
+    #add-name-modal,
+    #world-context-modal,
+    #save-chat-modal,
+    #load-chat-modal,
+    #overwrite-confirm-modal
+) .btn-primary {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    border: 1px solid var(--accent-primary);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.22), 0 3px 10px rgba(0, 0, 0, 0.18);
+}
+
+#cowriter-content :where(.btn-primary, .btn-add-prompt, .send-btn):hover,
+:where(
+    .cowriter-modal,
+    #cowriter-settings-modal,
+    #custom-prompt-edit-modal,
+    #add-name-modal,
+    #world-context-modal,
+    #save-chat-modal,
+    #load-chat-modal,
+    #overwrite-confirm-modal
+) .btn-primary:hover {
+    transform: none;
+    filter: brightness(1.08);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+}
+
+#cowriter-content :where(.btn-danger, .delete),
+:where(
+    .cowriter-modal,
+    #cowriter-settings-modal,
+    #custom-prompt-edit-modal,
+    #add-name-modal,
+    #world-context-modal,
+    #save-chat-modal,
+    #load-chat-modal,
+    #overwrite-confirm-modal
+) .btn-danger {
+    border-color: color-mix(in srgb, var(--accent-danger) 62%, var(--border-secondary));
+}
+
+#cowriter-content :where(button, .btn-primary, .btn-secondary):disabled {
+    transform: none;
+    opacity: 0.62;
+    cursor: not-allowed;
+}
+
+.cowriter-container {
+    height: clamp(560px, calc(100dvh - 94px), 800px);
+    min-width: 0;
+}
+
+.cowriter-header {
+    gap: 12px;
+}
+
+.cowriter-controls {
+    min-width: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.cowriter-btn,
+.cowriter-about-btn {
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    padding: 0;
+}
+
+.template-selector {
+    min-width: 0;
+}
+
+.template-selector select {
+    width: clamp(150px, 22vw, 210px);
+    min-width: 0;
+    height: 34px;
+}
+
+.send-btn {
+    width: 46px;
+    min-width: 46px;
+    height: 46px;
+    transform: none;
+}
+
+.send-btn:hover,
+.send-btn:active,
+.btn-card-action:hover {
+    transform: none;
+}
+
+/* These controls use transform for centering, so preserve it in every state. */
+#cowriter-content .quick-prompts-btn,
+#cowriter-content .quick-prompts-btn:hover,
+#cowriter-content .quick-prompts-btn:active,
+#cowriter-content .chat-input-container-inner .expand-text-btn,
+#cowriter-content .chat-input-container-inner .expand-text-btn:hover,
+#cowriter-content .chat-input-container-inner .expand-text-btn:active {
+    transform: translateY(-50%);
+}
+
+#cowriter-content .quick-prompts-btn,
+#cowriter-content .chat-input-container-inner .expand-text-btn {
+    min-height: 0;
+}
+
+#manual-model-id,
+#main-manual-model-id {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.model-search {
+    width: 100%;
+    margin-bottom: 8px;
+    background: color-mix(in srgb, var(--bg-primary) 82%, var(--bg-secondary));
+    border-color: color-mix(in srgb, var(--border-primary) 72%, var(--bg-primary));
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.22);
+}
+
+.model-search:hover {
+    border-color: var(--border-secondary);
+}
+
+.model-search:focus {
+    background: color-mix(in srgb, var(--bg-primary) 72%, var(--bg-tertiary));
+}
+
+/* Message actions are quiet glyph controls, not miniature secondary buttons. */
+#cowriter-content .message-action-btn {
+    width: 22px;
+    min-width: 22px;
+    height: 22px;
+    min-height: 22px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 3px;
+    box-shadow: none;
+    color: var(--text-tertiary);
+    font-size: 10px;
+    opacity: 0.72;
+}
+
+#cowriter-content .message-action-btn:hover {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    color: var(--text-primary);
+    opacity: 1;
+}
+
+#cowriter-content .message-action-btn.edit:hover {
+    background: transparent;
+    color: var(--accent-primary);
+}
+
+#cowriter-content .message-action-btn.refresh:hover {
+    background: transparent;
+    color: var(--accent-success);
+}
+
+#cowriter-content .message-action-btn.delete:hover {
+    background: transparent;
+    color: var(--accent-danger);
+}
+
+.model-catalog-status,
+.model-details {
+    margin-top: 7px;
+    color: var(--text-tertiary);
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.model-details {
+    color: var(--text-secondary);
+    overflow-wrap: anywhere;
+}
+
+.cowriter-settings-tabs {
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.cowriter-settings-tab {
+    min-width: max-content;
+}
+
+.cowriter-settings-modal,
+.world-context-modal,
+.save-chat-modal,
+.load-chat-modal,
+.confirm-modal,
+.cowriter-modal-content {
+    width: min(700px, calc(100vw - 28px));
+    max-height: min(90dvh, 820px);
+}
+
+/* Saved-chat library: compact, searchable, and directly organizable. */
+#load-chat-modal .load-chat-modal {
+    width: min(720px, calc(100vw - 28px));
+    height: min(580px, calc(100dvh - 40px));
+    max-width: 720px;
+    max-height: min(680px, calc(100dvh - 40px));
+}
+
+#load-chat-modal .modal-body {
+    display: flex;
+    min-height: 0;
+    padding: 16px;
+    overflow: hidden;
+    flex-direction: column;
+}
+
+.chat-library-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.chat-library-search {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+}
+
+.chat-library-search > i {
+    position: absolute;
+    top: 50%;
+    left: 11px;
+    color: var(--text-tertiary);
+    pointer-events: none;
+    transform: translateY(-50%);
+}
+
+#chat-library-search {
+    height: 36px;
+    margin: 0;
+    padding-left: 34px;
+    background: color-mix(in srgb, var(--bg-primary) 78%, var(--bg-secondary));
+    border-color: var(--border-primary);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.chat-library-summary {
+    flex: 0 0 auto;
+    color: var(--text-tertiary);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+.chat-library-help {
+    margin: 9px 0 13px;
+    color: var(--text-tertiary);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.chat-library-help i {
+    margin-inline: 2px;
+    color: var(--accent-primary);
+}
+
+#chats-by-folder {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: min(520px, calc(100dvh - 190px));
+    padding-right: 4px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+#load-chat-modal .chat-folder {
+    margin-bottom: 10px;
+    border-color: var(--border-primary);
+    border-radius: 5px;
+    background: color-mix(in srgb, var(--bg-secondary) 92%, var(--bg-primary));
+}
+
+#load-chat-modal .folder-header {
+    min-height: 40px;
+    padding: 8px 10px;
+    background: color-mix(in srgb, var(--bg-tertiary) 78%, var(--bg-secondary));
+}
+
+#load-chat-modal .folder-content.expanded {
+    max-height: none;
+}
+
+#load-chat-modal .folder-chats {
+    padding: 5px;
+}
+
+#load-chat-modal .chat-item {
+    min-height: 54px;
+    margin-bottom: 4px;
+    padding: 8px 10px;
+    border-color: transparent;
+    border-radius: 3px;
+    background: transparent;
+}
+
+#load-chat-modal .chat-item:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-primary);
+    transform: none;
+}
+
+#load-chat-modal :where(.chat-item-btn, .folder-action-btn) {
+    width: 28px;
+    min-width: 28px;
+    height: 28px;
+    min-height: 28px;
+    padding: 0;
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    color: var(--text-tertiary);
+}
+
+#load-chat-modal :where(.chat-item-btn, .folder-action-btn):hover {
+    background: var(--bg-quaternary);
+    border-color: var(--border-primary);
+    color: var(--text-primary);
+    box-shadow: none;
+    transform: none;
+}
+
+#load-chat-modal .chat-item-btn.load:hover {
+    color: var(--accent-primary);
+}
+
+#load-chat-modal .chat-item-btn.move:hover,
+#load-chat-modal .folder-action-btn.rename-folder:hover {
+    color: var(--accent-warning);
+}
+
+#load-chat-modal .chat-item-btn.delete:hover {
+    color: var(--accent-danger);
+}
+
+#load-chat-modal .chat-empty.compact {
+    min-height: 210px;
+}
+
+/* Shared Toolkit dialog used instead of native alert/confirm/prompt UI. */
+#cowriter-dialog-modal {
+    --cw-button-font: "Lato", "Nunito Sans", sans-serif;
+    --cw-button-surface: color-mix(in srgb, var(--bg-tertiary) 86%, var(--bg-secondary));
+    --cw-button-hover: color-mix(in srgb, var(--bg-quaternary) 88%, var(--accent-primary));
+    --cw-button-border: var(--border-secondary);
+    --cw-focus-ring: color-mix(in srgb, var(--accent-primary) 38%, transparent);
+    z-index: 10020;
+}
+
+#cowriter-dialog-modal .cowriter-dialog-content {
+    width: min(440px, calc(100vw - 28px));
+}
+
+#cowriter-dialog-modal .cowriter-dialog-heading {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 10px;
+}
+
+#cowriter-dialog-modal .cowriter-dialog-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    border: 1px solid color-mix(in srgb, var(--accent-primary) 42%, var(--border-primary));
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--accent-primary) 10%, transparent);
+    color: var(--accent-primary);
+}
+
+#cowriter-dialog-modal .modal-body {
+    padding: 18px;
+}
+
+#cowriter-dialog-message {
+    margin: 0 0 16px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+}
+
+#cowriter-dialog-modal .form-group[hidden],
+#cowriter-dialog-modal .cowriter-dialog-validation[hidden] {
+    display: none !important;
+}
+
+#cowriter-dialog-modal :where(input, select) {
+    margin-bottom: 0;
+}
+
+#cowriter-dialog-modal .cowriter-dialog-validation {
+    margin: -5px 0 12px;
+    color: var(--accent-danger);
+    font-size: 12px;
+}
+
+#cowriter-dialog-modal .modal-actions {
+    justify-content: flex-end;
+    margin-top: 18px;
+    padding: 0;
+}
+
+#cowriter-dialog-modal button {
+    min-height: 32px;
+    border-radius: 4px;
+    font-family: var(--cw-button-font);
+    font-weight: 500;
+    letter-spacing: 0.005em;
+}
+
+#cowriter-dialog-modal .btn-secondary {
+    background: var(--cw-button-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--cw-button-border);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.035);
+}
+
+#cowriter-dialog-modal .btn-secondary:hover {
+    background: var(--cw-button-hover);
+    border-color: color-mix(in srgb, var(--accent-primary) 58%, var(--border-secondary));
+}
+
+#cowriter-dialog-modal .btn-primary {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    border: 1px solid var(--accent-primary);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.22), 0 3px 10px rgba(0, 0, 0, 0.18);
+}
+
+#cowriter-dialog-modal .btn-danger {
+    background: color-mix(in srgb, var(--accent-danger) 88%, var(--bg-primary));
+    color: var(--text-primary);
+    border: 1px solid var(--accent-danger);
+}
+
+#cowriter-dialog-modal :where(.btn-primary, .btn-danger):hover {
+    filter: brightness(1.08);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+}
+
+#cowriter-dialog-modal :where(button, input, select):focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px var(--cw-focus-ring);
+}
+
+#cowriter-dialog-modal button:hover,
+#cowriter-dialog-modal button:active {
+    transform: none;
+}
+
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+@media (max-width: 900px) {
+    #cowriter-content {
+        padding-inline: 10px;
+    }
+
+    .cowriter-container {
+        height: calc(100dvh - 82px);
+        max-height: none;
+    }
+
+    .cowriter-header {
+        align-items: flex-start;
+        padding: 12px 14px;
+    }
+
+    .cowriter-title {
+        padding-top: 5px;
+    }
+
+    .message-content {
+        max-width: 90%;
+    }
+}
+
+@media (max-width: 720px) {
+    #cowriter-content {
+        padding: 0;
+    }
+
+    .cowriter-container {
+        width: 100%;
+        height: calc(100dvh - 50px);
+        min-height: 520px;
+        border-inline: 0;
+        border-radius: 0;
+    }
+
+    .cowriter-header {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .cowriter-title {
+        font-size: 18px;
+    }
+
+    .cowriter-controls {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) repeat(5, 34px);
+        width: 100%;
+        gap: 6px;
+    }
+
+    .template-selector {
+        margin: 0;
+    }
+
+    .template-selector select {
+        width: 100%;
+    }
+
+    .chat-messages {
+        padding: 14px 12px;
+    }
+
+    .message-content {
+        max-width: 94%;
+    }
+
+    .chat-input-container {
+        padding: 10px 11px max(10px, env(safe-area-inset-bottom));
+    }
+
+    .chat-input-wrapper {
+        gap: 8px;
+    }
+
+    #chat-input {
+        min-height: 46px;
+        max-height: min(34dvh, 220px);
+    }
+
+    .quick-prompts-dropdown {
+        right: 0;
+        width: min(340px, calc(100vw - 42px));
+        min-width: 0;
+    }
+
+    .cowriter-settings-modal,
+    .world-context-modal,
+    .save-chat-modal,
+    .load-chat-modal,
+    .confirm-modal,
+    .cowriter-modal-content {
+        width: calc(100vw - 16px) !important;
+        height: auto !important;
+        max-height: calc(100dvh - 16px);
+    }
+
+    .cowriter-scrollable-content,
+    .modal-body {
+        padding: 14px;
+    }
+
+    .settings-actions,
+    .modal-actions {
+        flex-wrap: wrap;
+        padding: 12px 14px;
+    }
+
+    .world-context-controls,
+    .model-controls-row {
+        align-items: stretch;
+        flex-wrap: wrap;
+    }
+
+    .chat-library-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .chat-library-summary {
+        align-self: flex-end;
+    }
+}
+
+@media (max-width: 480px) {
+    .cowriter-controls {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    .template-selector {
+        grid-column: 1 / -1;
+    }
+
+    .cowriter-btn,
+    .cowriter-about-btn {
+        width: 100%;
+    }
+
+    .input-hint {
+        display: none;
+    }
+
+    .cowriter-settings-tab {
+        padding-inline: 12px;
+        font-size: 13px;
+    }
+
+    .settings-actions > button,
+    .modal-actions > button {
+        flex: 1 1 140px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #cowriter-content *,
+    .cowriter-modal * {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}

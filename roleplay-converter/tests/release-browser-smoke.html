@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>RP Archiver Phase 8 release smoke</title>
+</head>
+<body>
+    <h1>RP Archiver Phase 8 release smoke</h1>
+    <pre id="result">pending</pre>
+    <iframe id="app" src="../index.html" title="Synthetic RP Archiver release harness"></iframe>
+    <script>
+        const result = document.getElementById('result');
+        const frame = document.getElementById('app');
+        const pause = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
+
+        function invariant(condition, message) {
+            if (!condition) throw new Error(message);
+        }
+
+        async function run() {
+            await new Promise((resolve, reject) => {
+                frame.addEventListener('load', resolve, { once: true });
+                frame.addEventListener('error', reject, { once: true });
+            });
+            const app = frame.contentWindow;
+            await app.initializeRPArchiver();
+
+            const manifestResponse = await fetch('fixtures/fixture-manifest.json');
+            invariant(manifestResponse.ok, 'Fixture manifest could not be loaded');
+            const manifest = await manifestResponse.json();
+            const fixtureResults = [];
+            const projectData = app.RPArchiver.get('projectData');
+
+            for (const fixture of manifest.fixtures) {
+                const response = await fetch(`fixtures/${fixture.file}`);
+                invariant(response.ok, `${fixture.file} could not be loaded`);
+                const legacyHTML = await response.text();
+                const legacyReport = app.RPArchiver.get('importController').importRoleplayHTML(legacyHTML, fixture.file);
+                invariant(legacyReport.sourceFormat === 'legacy-v0', `${fixture.file} did not use the legacy adapter`);
+                await pause(80);
+
+                const generatedHTML = await app.RPArchiver.get('previewExport').convertToHTML();
+                invariant(generatedHTML, `${fixture.file} did not generate`);
+                const migrated = projectData.extractProjectData(generatedHTML);
+                invariant(migrated?.schemaVersion === projectData.CURRENT_SCHEMA_VERSION, `${fixture.file} did not produce schema v2`);
+
+                const structuredReport = app.RPArchiver.get('importController').importRoleplayHTML(
+                    generatedHTML, `${fixture.file} structured reimport`
+                );
+                invariant(structuredReport.sourceFormat === 'structured', `${fixture.file} did not reimport as structured data`);
+                invariant(app.document.getElementById('title').value === migrated.story.title, `${fixture.file} title drifted`);
+                invariant(app.document.querySelectorAll('.part-entry').length === migrated.parts.length, `${fixture.file} part count drifted`);
+                invariant(app.document.getElementById('css-template').value === migrated.appearance.template, `${fixture.file} template drifted`);
+                invariant(
+                    app.document.getElementById('read-through-document-id').value === migrated.readThrough.documentId,
+                    `${fixture.file} Read-Through identity drifted`
+                );
+                fixtureResults.push({
+                    fixture: fixture.file,
+                    schemaVersion: migrated.schemaVersion,
+                    parts: migrated.parts.length,
+                    readThrough: migrated.readThrough.enabled,
+                    template: migrated.appearance.template
+                });
+            }
+
+            app.document.getElementById('read-through-enabled').checked = false;
+            app.document.getElementById('no-characters').checked = true;
+            app.document.getElementById('title').value = 'Template Release QA';
+            app.document.getElementById('universe').value = 'Synthetic QA';
+            const shortStory = 'A short representative story.';
+            const longStory = Array.from({ length: 36 }, (_, index) => (
+                `Paragraph ${index + 1} carries representative **formatted** archive text.`
+            )).join('\n\n');
+            const catalog = await (await fetch('fixtures/template-catalog.json')).json();
+            const templateResults = [];
+
+            for (const template of catalog.templates) {
+                app.document.getElementById('css-template').value = template;
+                for (const [length, sourceText] of [['short', shortStory], ['long', longStory]]) {
+                    app.loadProjectPartsIntoEditor([{ id: 'part-1', title: 'Representative', sourceText, entries: [] }], true);
+                    const entries = app.parseRoleplayText(sourceText, [], { usePartMarkers: false, noCharacters: true });
+                    app.RPArchiver.get('state').replaceParsedContent([
+                        { id: 'part-1', title: 'Representative', sourceText, entries }
+                    ], entries);
+                    const html = app.RPArchiver.get('htmlRenderer').render();
+                    invariant(html.includes(`content="${template}"`), `${template} ${length} render lost template metadata`);
+                    invariant(projectData.extractProjectData(html)?.appearance.template === template, `${template} ${length} payload drifted`);
+                }
+                templateResults.push(template);
+            }
+
+            return {
+                ok: true,
+                legacyFixtures: fixtureResults,
+                templates: templateResults,
+                representativeStories: ['short', 'long']
+            };
+        }
+
+        run().then(report => {
+            result.textContent = JSON.stringify(report, null, 2);
+            document.body.dataset.testState = 'passed';
+        }).catch(error => {
+            result.textContent = error.stack || error.message;
+            document.body.dataset.testState = 'failed';
+        });
+    </script>
+</body>
+</html>

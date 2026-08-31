@@ -1,0 +1,17 @@
+{
+  "scope": "all HTML files recursively under users",
+  "pathsIncluded": false,
+  "authoredValuesIncluded": false,
+  "htmlFiles": 148,
+  "formats": {
+    "legacy-dom": 2,
+    "legacy-fullInfoData": 41,
+    "unknown": 105
+  },
+  "embeddedShapeCount": 9,
+  "parseFailures": 0,
+  "invariantFailures": 0,
+  "hiddenObjects": 38,
+  "nonEmptyNotes": 114,
+  "linkedLorebooks": 4
+}

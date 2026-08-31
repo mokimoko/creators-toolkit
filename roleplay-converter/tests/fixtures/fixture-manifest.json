@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "description": "Synthetic fixtures matching the six legacy RP Archiver structures observed in the user corpus on 2026-08-28.",
+  "fixtures": [
+    {
+      "file": "legacy-01-meta-one-style-parts.html",
+      "expected": {
+        "hasTemplateMeta": true,
+        "hasMarkedRpStyle": false,
+        "hasDataOriginal": true,
+        "hasPartContainers": true,
+        "hasPartHeaders": true,
+        "hasReadThrough": false,
+        "hasStructuredProjectData": false,
+        "styleTags": 1
+      }
+    },
+    {
+      "file": "legacy-02-meta-one-style-single.html",
+      "expected": {
+        "hasTemplateMeta": true,
+        "hasMarkedRpStyle": false,
+        "hasDataOriginal": true,
+        "hasPartContainers": false,
+        "hasPartHeaders": false,
+        "hasReadThrough": false,
+        "hasStructuredProjectData": false,
+        "styleTags": 1
+      }
+    },
+    {
+      "file": "legacy-03-meta-two-style-parts-read-through.html",
+      "expected": {
+        "hasTemplateMeta": true,
+        "hasMarkedRpStyle": false,
+        "hasDataOriginal": true,
+        "hasPartContainers": true,
+        "hasPartHeaders": true,
+        "hasReadThrough": true,
+        "hasStructuredProjectData": false,
+        "styleTags": 2
+      }
+    },
+    {
+      "file": "legacy-04-no-meta-one-style-parts.html",
+      "expected": {
+        "hasTemplateMeta": false,
+        "hasMarkedRpStyle": false,
+        "hasDataOriginal": true,
+        "hasPartContainers": true,
+        "hasPartHeaders": true,
+        "hasReadThrough": false,
+        "hasStructuredProjectData": false,
+        "styleTags": 1
+      }
+    },
+    {
+      "file": "legacy-05-marked-style-parts-read-through.html",
+      "expected": {
+        "hasTemplateMeta": true,
+        "hasMarkedRpStyle": true,
+        "hasDataOriginal": true,
+        "hasPartContainers": true,
+        "hasPartHeaders": true,
+        "hasReadThrough": true,
+        "hasStructuredProjectData": false,
+        "styleTags": 2
+      }
+    },
+    {
+      "file": "legacy-06-no-meta-one-style-single.html",
+      "expected": {
+        "hasTemplateMeta": false,
+        "hasMarkedRpStyle": false,
+        "hasDataOriginal": true,
+        "hasPartContainers": false,
+        "hasPartHeaders": false,
+        "hasReadThrough": false,
+        "hasStructuredProjectData": false,
+        "styleTags": 1
+      }
+    }
+  ]
+}

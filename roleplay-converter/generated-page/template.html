@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="rp-archiver-template" content="{{CSS_TEMPLATE}}">
+    <title>{{TITLE}} - {{UNIVERSE}}</title>
+<link rel="stylesheet" href="generated.css">
+<style id="rp-archiver-generated-styles">
+    {{CHARACTER_STYLES}}
+    {{BACKGROUND_STYLES}}
+    {{BANNER_STYLES}}
+    {{FALLBACK_TITLE_STYLES}}
+
+    /* Footnotes inherit each RP theme while keeping an editorial endnote shape. */
+    .rp-footnotes {
+        margin: 3.5rem 0 0;
+        padding: 1.15rem 0.25rem 0;
+        border-top: 1px solid currentColor;
+        border-top-color: color-mix(in srgb, currentColor 22%, transparent);
+        font-size: 0.92em;
+    }
+
+    .rp-entry .rp-footnotes-heading {
+        margin: 0 0 0.9rem;
+        font-size: 0.82em;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        opacity: 0.72;
+    }
+
+    .rp-entry .rp-footnote-item {
+        position: relative;
+        margin: 0.45rem 0;
+        padding: 0.55rem 0.75rem 0.55rem 2.6rem;
+        border-radius: 0.55rem;
+        line-height: 1.55;
+        scroll-margin-top: 35vh;
+        transition: background-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .rp-footnote-ref,
+    .rp-footnote-backref {
+        color: inherit;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .rp-footnote-ref {
+        display: inline-block;
+        margin-left: 0.08em;
+        padding: 0 0.12em;
+        font-size: 0.78em;
+        font-weight: 700;
+        line-height: 1;
+        vertical-align: 0.48em;
+        border-bottom: 1px solid currentColor;
+        opacity: 0.78;
+        transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .rp-footnote-ref:hover,
+    .rp-footnote-ref:focus-visible {
+        opacity: 1;
+        transform: translateY(-1px);
+    }
+
+    .rp-footnote-backref {
+        position: absolute;
+        top: 0.42rem;
+        left: 0.4rem;
+        display: grid;
+        width: 1.65rem;
+        height: 1.65rem;
+        place-items: center;
+        border: 1px solid currentColor;
+        border-color: color-mix(in srgb, currentColor 28%, transparent);
+        border-radius: 50%;
+        font-weight: 700;
+        opacity: 0.72;
+        transition: opacity 160ms ease, transform 160ms ease, background-color 160ms ease;
+    }
+
+    .rp-footnote-backref:hover,
+    .rp-footnote-backref:focus-visible {
+        opacity: 1;
+        transform: translateY(-1px);
+        background: color-mix(in srgb, currentColor 9%, transparent);
+    }
+
+    .rp-footnote-ref:focus-visible,
+    .rp-footnote-backref:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 3px;
+    }
+
+    .rp-footnote-item:target,
+    .rp-footnote-jump {
+        background: color-mix(in srgb, currentColor 8%, transparent);
+        box-shadow: inset 3px 0 0 color-mix(in srgb, currentColor 48%, transparent);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .rp-footnote-ref,
+        .rp-footnote-backref,
+        .rp-footnote-item {
+            transition: none;
+        }
+    }
+</style>
+</head>
+<body>
+    <header>
+        <h1>{{TITLE}}</h1>
+        <h2>{{SUBTITLE}}</h2>  
+    </header>
+
+    <nav>
+        {{NAVIGATION}}
+    </nav>
+    
+    <div class="content-wrapper">
+        <div class="story-info">
+            <button class="export-button" onclick="exportText()">
+                <span style="margin-right: 5px;">📄</span> Export as Text
+            </button>
+            {{#if FALLBACK_TITLE}}
+            <div class="fallback-title">{{TITLE}}</div>
+            {{/if}}
+            <p><strong>Pairing:</strong> {{PAIRING}}</p>
+            <p><strong>Last Updated:</strong> {{DATE}}</p>
+            <p><strong>Status:</strong> {{STATUS}}</p>
+            {{#if DESCRIPTION}}
+            <div class="story-description">
+                <p><strong>Description:</strong> {{DESCRIPTION}}</p>
+            </div>
+            {{/if}}
+            
+            <div class="story-stats">
+                <div class="stat-item">{{WORD_COUNT}} words</div>
+                <div class="stat-item">~{{PAGE_COUNT}} pages</div>
+            </div>
+        </div>
+        
+        {{#if IMAGES}}
+        <div class="gallery-section">
+            <div class="gallery-header" onclick="toggleGallery()">
+                <span>Story Images</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="story-gallery gallery-content">
+                {{IMAGES}}
+            </div>
+        </div>
+        {{/if}}
+        
+        {{TABLE_OF_CONTENTS}}
+    </div>
+    
+    <main>
+        {{CONTENT}}
+        {{#if GLOSSARY}}
+        {{GLOSSARY}}
+        {{/if}}
+    </main>
+    
+    <!-- Image Modal -->
+    <div id="imageModal" class="image-modal">
+        <div class="image-modal-content">
+            <button class="image-modal-close" onclick="closeImageModal()">&times;</button>
+            <button class="image-modal-nav prev" onclick="previousImage()" id="prevBtn">‹</button>
+            <img id="modalImage" src="" alt="Story Image">
+            <button class="image-modal-nav next" onclick="nextImage()" id="nextBtn">›</button>
+        </div>
+    </div>
+    
+    <button id="scrollTopBtn" class="scroll-top-btn" title="Scroll to top">↑</button>
+    
+    {{#if SOUNDTRACK}}
+    <div class="soundtrack-panel" id="soundtrackPanel">
+        <button class="soundtrack-toggle" id="soundtrackToggle" title="Toggle Soundtrack">♫</button>
+        <div class="soundtrack-header">Story Soundtrack</div>
+        <div class="soundtrack-content">
+            {{SOUNDTRACK}}
+        </div>
+    </div>
+    {{/if}}
+    
+    {{#if COMMENTS}}
+    <div class="comments-panel" id="commentsPanel">
+        <button class="comments-toggle" id="commentsToggle" title="Toggle Comments">💬</button>
+        <div class="comments-header">Author Comments</div>
+        <div class="comments-content">
+            {{COMMENTS}}
+        </div>
+    </div>
+    {{/if}}
+    
+    <script>
+{{GENERATED_PAGE_RUNTIME}}
+    </script>
+
+</body>
+</html>

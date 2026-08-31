@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator's Toolkit</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="my-sites.css">
+    <link rel="stylesheet" href="user/auth.css">
+    <link rel="stylesheet" href="cards.css">
+    <link rel="stylesheet" href="settings.css">
+    <link rel="stylesheet" href="about/about.css">
+    <link rel="stylesheet" href="notebook/notebook.css">
+    <link rel="stylesheet" href="notebook/markdown-themes.css">
+    <link rel="stylesheet" href="cowriter/cowriter.css">
+    <link rel="stylesheet" href="cowriter/cowriter-about.css">
+    <link rel="stylesheet" href="cowriter/prompts.css">
+    <link rel="stylesheet" href="cowriter/cowriter-refresh.css">
+    <link rel="stylesheet" href="shell-primitives.css">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&family=Lato:wght@400;700&family=Libre+Caslon+Display&family=Lora:wght@400;700&family=Montserrat:wght@600&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Markdown parser -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <script src="vendor/dompurify.min.js"></script>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+        <div class="nav-content">
+            <h1 class="nav-title"></h1>
+            
+            <!-- Tab Navigation (now with CoWriter) -->
+            <div class="main-tabs" role="tablist" aria-label="Toolkit sections">
+                <button type="button" class="main-tab active" id="tab-tools" data-tab="tools" role="tab" aria-controls="tools-content" aria-selected="true">Tools</button>
+                <button type="button" class="main-tab" id="tab-my-sites" data-tab="my-sites" role="tab" aria-controls="my-sites-content" aria-selected="false" tabindex="-1">My Sites</button>
+                <button type="button" class="main-tab" id="tab-notebook" data-tab="notebook" role="tab" aria-controls="notebook-content" aria-selected="false" tabindex="-1">Notebook</button>
+                <button type="button" class="main-tab" id="tab-cowriter" data-tab="cowriter" role="tab" aria-controls="cowriter-content" aria-selected="false" tabindex="-1">CoWriter</button>
+                <div class="nav-dropdown">
+                    <button type="button" class="nav-dropdown-btn" aria-expanded="false" aria-haspopup="menu">
+                        Managers <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="nav-dropdown-menu" role="menu">
+                        <a href="/extractor" class="nav-dropdown-item" role="menuitem">
+                            <i class="fas fa-book"></i>
+                            <span>Lorebook Manager</span>
+                        </a>
+                        <a href="/character-manager" class="nav-dropdown-item" role="menuitem">
+                            <i class="fas fa-user-friends"></i>
+                            <span>Character Manager</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- User info (stays on right) -->
+            <div class="user-info is-hidden-by-default" id="user-info">
+                <span class="user-details">
+                    <span id="user-display"></span>
+                </span>
+                <button type="button" class="user-menu-trigger btn-icon" aria-label="Open user menu" aria-expanded="false" aria-controls="user-context-menu">
+                    <img src="images/default-avatar.png" alt="" class="user-avatar" id="user-avatar">
+                </button>
+            </div>
+
+            <!-- User Context Menu -->
+            <div class="user-context-menu is-hidden-by-default" id="user-context-menu" role="menu">
+                <button type="button" class="context-menu-item" id="context-settings" role="menuitem">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </button>
+                <button type="button" class="context-menu-item" id="context-about" role="menuitem">
+                    <i class="fas fa-info-circle"></i>
+                    <span>About</span>
+                </div>
+            </div>
+            
+            <!-- About button - positioned to the very far right -->
+            <button type="button" class="about-btn btn-icon" id="about-btn" title="About" aria-label="About Creator's Toolkit">
+                <i class="fas fa-info-circle"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content is-hidden-by-default" id="main-content">
+        
+        <!-- Tools Tab (existing content) -->
+        <div id="tools-content" class="tab-content active" role="tabpanel" aria-labelledby="tab-tools">
+            <!-- Archive Desk masthead -->
+            <div class="tools-header">
+                <div class="archive-desk-heading">
+                    <p class="archive-desk-eyebrow">Many Worlds · One Creative Workspace</p>
+                    <h1 class="archive-desk-title">Creator's Toolkit</h1>
+                    <p class="archive-desk-intro">A focused desk for building worlds, preserving stories, and publishing the work when it is ready.</p>
+                </div>
+                <div class="archive-desk-artwork" aria-label="Placeholder artwork">
+                    <img src="images/toolkit-image.png" alt="">
+                </div>
+            </div>
+
+            <div class="tools-container">
+                <!-- Lore Codex Card -->
+                <article class="tool-card" data-tool="info-converter">
+                    <div class="archive-tool-atmosphere" aria-hidden="true">
+                        <img src="images/lore-codex.png" alt="">
+                    </div>
+                    <div class="card-content">
+                        <div class="archive-tool-heading">
+                            <div class="card-icon" aria-hidden="true">
+                                <img class="card-icon-image" src="images/lore-codex-image.png" alt="">
+                            </div>
+                            <div>
+                                <p class="archive-tool-eyebrow">Worldbuilding</p>
+                                <h2 class="card-title">Lore Codex</h2>
+                            </div>
+                        </div>
+                        <p class="card-description">Shape characters, timelines, storylines, and the public world around them.</p>
+                        <button type="button" class="card-launch-btn" data-url="/info-converter">
+                            Open Tool <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </article>
+
+                <!-- RP Archiver Card -->
+                <article class="tool-card" data-tool="roleplay-converter">
+                    <div class="archive-tool-atmosphere" aria-hidden="true">
+                        <img src="images/rp-archiver.png" alt="">
+                    </div>
+                    <div class="card-content">
+                        <div class="archive-tool-heading">
+                            <div class="card-icon" aria-hidden="true">
+                                <img class="card-icon-image" src="images/rp-archiver-image.png" alt="">
+                            </div>
+                            <div>
+                                <p class="archive-tool-eyebrow">Conversation Archive</p>
+                                <h2 class="card-title">RP Archiver</h2>
+                            </div>
+                        </div>
+                        <p class="card-description">Turn roleplay logs into durable, readable editions made for keeping.</p>
+                        <button type="button" class="card-launch-btn" data-url="/roleplay-converter">
+                            Open Tool <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        <!-- My Sites Tab -->
+        <div id="my-sites-content" class="tab-content" role="tabpanel" aria-labelledby="tab-my-sites">
+            <!-- Sort Controls -->
+            <div class="sites-controls">
+                <div class="sort-controls">
+                    <label for="sites-sort"></label>
+                    <select id="sites-sort">
+                        <option value="lastModified">Last Updated</option>
+                        <option value="created">Date Created</option>
+                        <option value="title">Title (A-Z)</option>
+                    </select>
+                    <button type="button" class="favorites-filter-btn" id="favorites-filter-btn">
+                        <i class="fas fa-star"></i>
+                        <span>Favorites</span>
+                    </button>
+                </div>
+                
+                <!-- NEW: Tags Filtering -->
+                <div class="tags-controls">
+                    <span class="tags-label" id="tags-label">Tags:</span>
+                    <div class="tags-chips-container">
+                        <div class="tags-chips" id="tags-chips">
+                            <!-- Tag chips will be populated by JS -->
+                        </div>
+                        <button type="button" class="tags-expand-btn is-hidden-by-default" id="tags-expand-btn" aria-label="Show more tags">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                    <div class="tags-dropdown is-hidden-by-default" id="tags-dropdown">
+                        <!-- Full tag list dropdown -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sites Grid -->
+            <div class="sites-container" id="sites-container">
+                <div class="loading-state" id="sites-loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading your sites...</p>
+                </div>
+                <div class="sites-warning" id="sites-warning" role="status" hidden></div>
+                <div class="empty-state is-hidden-by-default" id="sites-empty">
+                    <i class="fas fa-folder-open"></i>
+                    <h3 id="empty-state-title">No Sites Yet</h3>
+                    <p id="empty-state-message">Create your first project using the Lore Codex!</p>
+                    <button type="button" class="btn-primary" data-tab-target="tools">
+                        <i class="fas fa-tools"></i> Go to Tools
+                    </button>
+                    <button type="button" class="btn-primary" id="sites-retry" hidden>
+                        <i class="fas fa-rotate-right" aria-hidden="true"></i> Retry
+                    </button>
+                </div>
+                <div class="sites-grid" id="sites-grid">
+                    <!-- Site cards will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Notebook tab -->
+        <div id="notebook-content" class="tab-content" role="tabpanel" aria-labelledby="tab-notebook">
+            <div class="notebook-container">
+                <!-- Collections & Notes Sidebar -->
+                <aside class="notebook-sidebar" id="notebook-sidebar" aria-label="Notes and collections">
+                    <!-- Sidebar Header -->
+                    <div class="sidebar-header">
+                        <div class="sidebar-title">
+                            <i class="fas fa-book"></i>
+                            <span>Notes</span>
+                        </div>
+                        <div class="sidebar-actions">
+                            <button type="button" class="sidebar-action-btn" id="new-note-btn" title="New Note" aria-label="Create new note">
+                                <i class="fas fa-plus" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="sidebar-action-btn" id="new-collection-btn" title="New Collection" aria-label="Create new collection">
+                                <i class="fas fa-folder-plus" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div class="sidebar-search">
+                        <div class="search-input-wrapper">
+                            <i class="fas fa-search" aria-hidden="true"></i>
+                            <label class="visually-hidden" for="notes-search">Search notes</label>
+                            <input type="search" id="notes-search" placeholder="Search notes..." autocomplete="off">
+                            <button type="button" class="search-clear-btn is-hidden-by-default" id="search-clear" aria-label="Clear note search">
+                                <i class="fas fa-times" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Collections Tree -->
+                    <div class="collections-tree" id="collections-tree">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+
+                    <!-- Sidebar Footer -->
+                    <div class="sidebar-footer">
+                        <div class="stats-summary">
+                            <span id="notes-count">0 notes</span>
+                            <span class="stats-separator">•</span>
+                            <span id="words-count">0 words</span>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Resize Handle -->
+                <div class="sidebar-resize-handle" role="separator" aria-label="Resize notes sidebar" aria-orientation="vertical" tabindex="0"></div>
+                <button type="button" class="notebook-sidebar-scrim" aria-label="Close notes panel" tabindex="-1"></button>
+
+                <!-- Main Editor Area -->
+                <div class="editor-main">
+                    <!-- Editor Header -->
+                    <div class="editor-header">
+                        <div class="current-note-info">
+                            <label class="visually-hidden" for="note-title-input">Note title</label>
+                            <input type="text" class="note-title-input" id="note-title-input" placeholder="Untitled Note">
+                            <div class="note-breadcrumb" id="note-breadcrumb">
+                                <i class="fas fa-folder"></i>
+                                <span>Uncategorized</span>
+                            </div>
+                        </div>
+                        <div class="editor-actions">
+                            <button type="button" class="editor-action-btn notebook-sidebar-toggle" id="notebook-sidebar-toggle" title="Show Notes" aria-label="Show notes and collections" aria-controls="notebook-sidebar" aria-expanded="false">
+                                <i class="fas fa-bars" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="editor-action-btn" id="save-note-btn" title="Save Note" aria-label="Save note">
+                                <i class="fas fa-save" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="editor-action-btn" id="snippets-btn" title="Snippets" aria-label="Open snippets">
+                                <i class="fas fa-puzzle-piece" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="editor-action-btn" id="link-notes-btn" title="Link Notes" aria-label="Link another note">
+                                <i class="fas fa-link" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="editor-action-btn" id="markdown-theme-btn" title="Markdown Theme Settings" aria-label="Open Markdown theme settings">
+                                <i class="fas fa-palette" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Formatting Toolbar -->
+                    <div class="formatting-toolbar" role="toolbar" aria-label="Markdown formatting">
+                        <div class="toolbar-group">
+                            <button type="button" class="format-btn" data-format="bold" title="Bold (Ctrl+B)" aria-label="Bold">
+                                <i class="fas fa-bold" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="format-btn" data-format="italic" title="Italic (Ctrl+I)" aria-label="Italic">
+                                <i class="fas fa-italic" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="format-btn" data-format="code" title="Inline Code" aria-label="Inline code">
+                                <i class="fas fa-code" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <div class="toolbar-separator"></div>
+                        <div class="toolbar-group">
+                            <button type="button" class="format-btn" data-format="h1" title="Heading 1" aria-label="Heading 1">H1</button>
+                            <button type="button" class="format-btn" data-format="h2" title="Heading 2" aria-label="Heading 2">H2</button>
+                            <button type="button" class="format-btn" data-format="h3" title="Heading 3" aria-label="Heading 3">H3</button>
+                        </div>
+                        <div class="toolbar-separator"></div>
+                        <div class="toolbar-group">
+                            <button type="button" class="format-btn" data-format="quote" title="Quote" aria-label="Block quote">
+                                <i class="fas fa-quote-right" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <div class="toolbar-spacer"></div>
+                        <div class="toolbar-group">
+                            <button type="button" class="format-btn" id="toggle-preview" title="Toggle Preview" aria-label="Toggle Markdown preview" aria-pressed="false">
+                                <i class="fas fa-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Editor Container -->
+                    <div class="editor-container">
+                        <!-- FIXED: Use reliable textarea instead of problematic contentEditable -->
+                        <div class="editor-wrapper">
+                            <textarea 
+                                class="editor-content" 
+                                id="markdown-editor" 
+                                aria-label="Note content in Markdown"
+                                placeholder="Start writing your note here...
+
+        # Headers
+        **Bold** and *italic* text
+        `Inline code`
+        ==Highlighted text==
+        !~Underlined text~!
+        ~~Strikethrough~~
+        [External link](http://www.url.com)
+        - Regular lists
+        > Blockquotes
+        ```code blocks```
+
+        | Tables | Work |
+        |--------|------|
+        | Cell   | Cell |
+
+        [[note links]] to other notes
+
+        Right-click text in CoWriter to create snippets!"
+                            ></textarea>
+                        </div>
+
+                        <!-- Preview Overlay (for toggle preview) -->
+                        <div class="preview-overlay is-hidden-by-default" id="preview-overlay" role="region" aria-label="Markdown preview">
+                            <div class="preview-content" id="preview-content">
+                                <!-- Rendered markdown appears here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Bar -->
+                    <div class="editor-status">
+                        <div class="status-left">
+                            <span class="status-item">
+                                <i class="fas fa-file-alt"></i>
+                                <span id="word-count">0 words</span>
+                            </span>
+                            <span class="status-item">
+                                <i class="fas fa-keyboard"></i>
+                                <span id="char-count">0 characters</span>
+                            </span>
+                        </div>
+                        <div class="status-right">
+                            <span class="status-item" id="save-status" role="status" aria-live="polite">
+                                <i class="fas fa-clock"></i>
+                                <span>Not saved</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Snippets Panel (slides in from right) -->
+        <aside class="snippets-panel" id="snippets-panel" aria-labelledby="snippets-panel-title">
+            <div class="snippets-header">
+                <h3 id="snippets-panel-title">
+                    <i class="fas fa-puzzle-piece"></i>
+                    Snippets
+                </h3>
+                <div class="snippets-actions">
+                    <button type="button" class="snippets-action-btn" id="close-snippets-btn" title="Close" aria-label="Close snippets">
+                        <i class="fas fa-times" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="snippets-search">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                    <label class="visually-hidden" for="snippets-search">Search snippets</label>
+                    <input type="search" id="snippets-search" placeholder="Search snippets..." autocomplete="off">
+                </div>
+            </div>
+
+            <div class="snippets-tags-filter is-hidden-by-default" id="snippets-tags-filter">
+                <div class="tags-filter-header">
+                    <span class="tags-filter-label">Filter by tag:</span>
+                    <button type="button" class="clear-tag-filter btn-quiet" id="clear-tag-filter" aria-label="Clear snippet tag filter">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                </div>
+                <div class="tags-filter-chips" id="tags-filter-chips">
+                    <!-- Tag chips will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="snippets-list" id="snippets-list">
+                <!-- Snippet items will be populated here -->
+            </div>
+        </aside>
+
+        <!-- Context Menu -->
+        <div class="context-menu is-hidden-by-default" id="notebook-context-menu">
+            <!-- Will be populated dynamically based on what's right-clicked -->
+        </div>      
+
+        <!-- NEW: CoWriter Tab -->
+        <div id="cowriter-content" class="tab-content" role="tabpanel" aria-labelledby="tab-cowriter">
+            <div class="cowriter-container">
+                <!-- CoWriter Header -->
+                <div class="cowriter-header">
+                    <h2 class="cowriter-title">
+                        <i class="fas fa-feather-alt"></i>
+                        CoWriter
+                    </h2>
+                    <div class="cowriter-controls">
+                        <div class="template-selector">
+                            <select id="template-select" title="Choose a session template" aria-label="Session template">
+                                <option value="">None</option>
+                            </select>
+                        </div>
+                        <button type="button" class="cowriter-btn" id="save-chat-btn" title="Save Chat" aria-label="Save chat">
+                            <i class="fas fa-save"></i>
+                        </button>
+                        <button type="button" class="cowriter-btn" id="load-chat-btn" title="Load Chat" aria-label="Load chat">
+                            <i class="fas fa-folder-open"></i>
+                        </button>
+                        <button type="button" class="cowriter-btn" id="clear-chat-btn" title="Clear Chat" aria-label="Clear chat">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        <button type="button" class="cowriter-btn" id="cowriter-settings-btn" title="CoWriter Settings" aria-label="Open CoWriter settings">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                        <button type="button" class="cowriter-about-btn" id="cowriter-about-btn" title="About CoWriter" aria-label="About CoWriter">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Chat Messages Area -->
+                <div class="chat-container" id="chat-container">
+                    <div class="chat-messages" id="chat-messages" aria-label="CoWriter conversation">
+                        <!-- Welcome message -->
+                        <div class="message ai-message">
+                            <div class="message-content">
+                                <div class="message-text">
+                                    Welcome to CoWriter! I'm here to help you brainstorm, develop your worlds, and explore your creative ideas. What would you like to work on today?
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <div class="textarea-container chat-input-container-inner">
+                            <textarea id="chat-input" placeholder="Type your message here..." rows="1" aria-label="Message to CoWriter"></textarea>
+                            <button type="button" class="expand-text-btn" data-field="chat-input" title="Expand text editor" aria-label="Expand message editor">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                            <button type="button" class="quick-prompts-btn" id="quick-prompts-btn" title="Quick prompts" aria-label="Show quick prompts" aria-expanded="false" aria-controls="quick-prompts-dropdown">
+                                <i class="fas fa-bolt"></i>
+                            </button>
+                            <div class="quick-prompts-dropdown" id="quick-prompts-dropdown" aria-label="Quick prompts">
+                                <!-- Quick prompt items will be populated here -->
+                            </div>
+                        </div>
+                        <button type="button" class="send-btn" id="send-btn" title="Send message" aria-label="Send message">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    <div class="input-hint">
+                        Press <kbd>Enter</kbd> to send, <kbd>Shift+Enter</kbd> for new line
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- CoWriter Text Expand Modal -->
+    <div id="cowriter-text-expand-modal" class="cowriter-modal is-hidden-by-default" role="dialog" aria-modal="true" aria-labelledby="cowriter-expand-title">
+        <div class="cowriter-modal-content cowriter-text-expand-content">
+            <div class="cowriter-modal-header">
+                <h3 id="cowriter-expand-title">Expand Text</h3>
+                <button type="button" class="cowriter-modal-close" id="close-cowriter-expand" aria-label="Close expanded editor" data-dialog-close>&times;</button>
+            </div>
+            <div class="cowriter-modal-body cowriter-text-expand-body">
+                <textarea id="cowriter-expanded-textarea" class="cowriter-expanded-text"
+                        placeholder="Enter your text here..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- CoWriter Settings Modal -->
+    <div class="modal-overlay is-hidden-by-default" id="cowriter-settings-modal" role="dialog" aria-modal="true" aria-labelledby="cowriter-settings-title">
+        <div class="modal-content cowriter-settings-modal">
+            <!-- Fixed Header -->
+            <div class="modal-header">
+                <h2 id="cowriter-settings-title">CoWriter Settings</h2>
+                <button type="button" class="close-btn" id="close-cowriter-settings" aria-label="Close CoWriter settings" data-dialog-close>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Fixed Settings Tabs (moved outside modal-body) -->
+            <div class="cowriter-settings-tabs" role="tablist" aria-label="CoWriter settings sections">
+                <button type="button" class="cowriter-settings-tab active" data-tab="personalize" role="tab" aria-selected="true">Personalize</button>
+                <button type="button" class="cowriter-settings-tab" data-tab="prompts" role="tab" aria-selected="false" tabindex="-1">Prompts</button>
+                <button type="button" class="cowriter-settings-tab" data-tab="configuration" role="tab" aria-selected="false" tabindex="-1">Configuration</button>
+            </div>
+            
+            <!-- Scrollable Content Area -->
+            <div class="modal-body cowriter-scrollable-content">
+                <!-- Personalize Tab -->
+                <div class="cowriter-settings-content active" id="personalize-content">
+                    <div class="settings-section">
+                        <h3>Writing Tone & Style</h3>
+                        <div class="form-group">
+                            <label for="tone-select">Conversational Tone:</label>
+                            <select id="tone-select">
+                                <option value="">None</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="style-select">Writing Style:</label>
+                            <select id="style-select">
+                                <option value="">None</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>World Context</h3>
+                        <div class="form-group">
+                            <label for="world-context-select">Saved World Contexts:</label>
+                            <div class="world-context-controls">
+                                <select id="world-context-select">
+                                    <option value="">None Selected</option>
+                                </select>
+                                <button type="button" class="btn-secondary" id="edit-world-context-btn">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button type="button" class="btn-secondary" id="new-world-context-btn">
+                                    <i class="fas fa-plus"></i> New
+                                </button>
+                            </div>
+                        </div>
+                        <div class="current-context-preview" id="current-context-preview">
+                            <label>Current Context:</label>
+                            <div class="context-preview-text" id="context-preview-text">
+                                No world context selected
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prompts tab -->
+                <div id="prompts-content" class="cowriter-settings-content">
+                    <!-- Prompt Sub-Tabs -->
+                    <div class="prompt-tabs" role="tablist" aria-label="Prompt categories">
+                        <button type="button" class="prompt-tab active" data-tab="main-prompts" role="tab" aria-selected="true">
+                            <i class="fas fa-cog"></i>
+                            Main Prompt
+                        </button>
+                        <button type="button" class="prompt-tab" data-tab="tones" role="tab" aria-selected="false" tabindex="-1">
+                            <i class="fas fa-palette"></i>
+                            Tones
+                        </button>
+                        <button type="button" class="prompt-tab" data-tab="styles" role="tab" aria-selected="false" tabindex="-1">
+                            <i class="fas fa-pen-fancy"></i>
+                            Styles
+                        </button>
+                        <button type="button" class="prompt-tab" data-tab="templates" role="tab" aria-selected="false" tabindex="-1">
+                            <i class="fas fa-file-alt"></i>
+                            Templates
+                        </button>
+                        <button type="button" class="prompt-tab" data-tab="quick-prompts" role="tab" aria-selected="false" tabindex="-1">
+                            <i class="fas fa-bolt"></i>
+                            Q. Prompts
+                        </button>
+                    </div>
+
+                    <!-- Main Prompt Tab Content -->
+                    <div id="main-prompts" class="prompt-tab-content active">
+                        <div class="prompt-content-header">
+                            <h4>Main System Prompt</h4>
+                            <button type="button" class="btn-add-prompt" id="add-main-prompt">
+                                <i class="fas fa-plus"></i>
+                                New
+                            </button>
+                        </div>
+                        
+                        <div class="main-prompt-controls">
+                            <select id="main-prompt-dropdown" class="prompt-select">
+                                <option value="default">Default Main Prompt</option>
+                            </select>
+                            <div class="prompt-actions">
+                                <button type="button" class="btn-prompt-action" id="edit-main-prompt" disabled>
+                                    <i class="fas fa-edit"></i>
+                                    Edit
+                                </button>
+                                <button type="button" class="btn-prompt-action delete" id="delete-main-prompt" disabled>
+                                    <i class="fas fa-trash"></i>
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <textarea id="main-prompt-text" class="main-prompt-textarea" rows="10" readonly 
+                                placeholder="Main system prompt will appear here..."></textarea>
+                    </div>
+
+                    <!-- Tones Tab Content -->
+                    <div id="tones" class="prompt-tab-content">
+                        <div class="prompt-content-header">
+                            <h4>Custom Tones</h4>
+                            <button type="button" class="btn-add-prompt" id="add-tone">
+                                <i class="fas fa-plus"></i>
+                                Add Tone
+                            </button>
+                        </div>
+                        
+                        <div class="custom-prompts-grid" id="tones-list">
+                            <!-- Dynamic content populated by JS -->
+                        </div>
+                        
+                        <div class="empty-state is-hidden-by-default" id="tones-empty">
+                            <i class="fas fa-palette"></i>
+                            <p>No custom tones yet</p>
+                            <small>Create custom tones to personalize your AI's conversational style</small>
+                        </div>
+                    </div>
+
+                    <!-- Styles Tab Content -->
+                    <div id="styles" class="prompt-tab-content">
+                        <div class="prompt-content-header">
+                            <h4>Custom Styles</h4>
+                            <button type="button" class="btn-add-prompt" id="add-style">
+                                <i class="fas fa-plus"></i>
+                                Add Style
+                            </button>
+                        </div>
+                        
+                        <div class="custom-prompts-grid" id="styles-list">
+                            <!-- Dynamic content populated by JS -->
+                        </div>
+                        
+                        <div class="empty-state is-hidden-by-default" id="styles-empty">
+                            <i class="fas fa-pen-fancy"></i>
+                            <p>No custom styles yet</p>
+                            <small>Create custom writing styles to guide your AI's output</small>
+                        </div>
+                    </div>
+
+                    <!-- Templates Tab Content -->
+                    <div id="templates" class="prompt-tab-content">
+                        <div class="prompt-content-header">
+                            <h4>Custom Templates</h4>
+                            <button type="button" class="btn-add-prompt" id="add-template">
+                                <i class="fas fa-plus"></i>
+                                Add Template
+                            </button>
+                        </div>
+                        
+                        <div class="custom-prompts-grid" id="templates-list">
+                            <!-- Dynamic content populated by JS -->
+                        </div>
+                        
+                        <div class="empty-state is-hidden-by-default" id="templates-empty">
+                            <i class="fas fa-file-alt"></i>
+                            <p>No custom templates yet</p>
+                            <small>Create templates for common creative writing scenarios</small>
+                        </div>
+                    </div>
+
+                    <!-- Quick Prompts Tab Content -->
+                    <div id="quick-prompts" class="prompt-tab-content">
+                        <div class="prompt-content-header">
+                            <h4>Custom Quick Prompts</h4>
+                            <button type="button" class="btn-add-prompt" id="add-quick-prompt">
+                                <i class="fas fa-plus"></i>
+                                Add Quick Prompt
+                            </button>
+                        </div>
+                        
+                        <div class="custom-prompts-grid" id="quick-prompts-list">
+                            <!-- Dynamic content populated by JS -->
+                        </div>
+                        
+                        <div class="empty-state is-hidden-by-default" id="quick-prompts-empty">
+                            <i class="fas fa-bolt"></i>
+                            <p>No custom quick prompts yet</p>
+                            <small>Create quick prompts for instant insertion during conversations</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuration Tab -->
+                <div class="cowriter-settings-content" id="configuration-content">
+                    <div class="settings-section">
+                        <h3>LLM Provider</h3>
+                        <div class="form-group">
+                            <label for="provider-select">Provider:</label>
+                            <select id="provider-select">
+                                <option value="google">Google Gemini</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="nanogpt-mode-container" hidden>
+                            <label for="nanogpt-mode-select">NanoGPT billing/catalog mode:</label>
+                            <select id="nanogpt-mode-select">
+                                <option value="account">Account default</option>
+                                <option value="subscription">Subscription only</option>
+                                <option value="paid">Paid / extras catalog</option>
+                            </select>
+                            <small>Subscription only never falls through to paid chat usage.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="model-select">Model:</label>
+                            <input type="search" id="model-search" class="model-search" placeholder="Filter models by name or ID" autocomplete="off">
+                            <div class="model-controls-row">
+                                <select id="model-select">
+                                    <option value="">Loading models...</option>
+                                </select>
+                                <button type="button" class="btn-secondary refresh-btn" id="refresh-models-btn" title="Refresh Models" aria-label="Refresh model catalog">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                <label class="free-models-toggle is-hidden-by-default" id="free-models-toggle-container">
+                                    <input type="checkbox" id="free-models-only">
+                                    <span>Free only</span>
+                                </label>
+                            </div>
+                            <input type="text" id="manual-model-id" placeholder="Or enter a model ID manually" autocomplete="off">
+                            <div id="model-catalog-status" class="model-catalog-status" role="status" aria-live="polite"></div>
+                            <div id="model-details" class="model-details" hidden></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="api-key-input">API Key:</label>
+                            <div class="api-key-wrapper">
+                                <input type="password" id="api-key-input" placeholder="Enter your API key...">
+                                <button type="button" class="toggle-visibility-btn" id="toggle-api-key-btn" title="Show/Hide Key" aria-label="Show or hide API key">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="helper-text">
+                                Your API key is stored securely and only used for making requests to the LLM provider.
+                            </div>
+                            <div class="provider-key-actions">
+                                <button type="button" class="btn-danger btn-small" id="remove-api-key-btn" hidden>
+                                    <i class="fas fa-key"></i> Remove saved key
+                                </button>
+                            </div>
+                        </div>
+                        <div class="api-status" id="api-status" role="status" aria-live="polite">
+                            <span class="status-indicator" id="status-indicator"></span>
+                            <span class="status-text" id="status-text">Not configured</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Fixed Settings Actions (moved outside modal-body) -->
+            <div class="settings-actions">
+                <button type="button" class="btn-primary" id="save-cowriter-settings">
+                    <i class="fas fa-save"></i> Save Settings
+                </button>
+                <button type="button" class="btn-secondary" id="test-connection-btn">
+                    <i class="fas fa-plug"></i> Test Connection
+                </button>
+            </div>
+        </div>
+    </div>
+
+        <!-- Modal for editing custom prompts -->
+    <div id="custom-prompt-edit-modal" class="modal-overlay cowriter-modal is-hidden-by-default" role="dialog" aria-modal="true" aria-labelledby="custom-prompt-modal-title">
+        <div class="modal-content cowriter-modal-content">
+            <div class="modal-header cowriter-modal-header">
+                <h3 id="custom-prompt-modal-title">Edit Custom Prompt</h3>
+                <button type="button" class="modal-close cowriter-modal-close" id="close-custom-prompt-edit" aria-label="Close prompt editor" data-dialog-close>&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="custom-prompt-form">
+                    <div class="form-group">
+                        <label for="custom-prompt-name">Name:</label>
+                        <input type="text" id="custom-prompt-name" class="form-control" 
+                            placeholder="Enter a name for this prompt..." required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="custom-prompt-content">Content:</label>
+                        <textarea id="custom-prompt-content" class="form-control" rows="12" 
+                                placeholder="Enter your custom prompt content..." required></textarea>
+                    </div>
+                    
+                    <div class="form-group is-hidden-by-default" id="template-description-group">
+                        <label for="template-description">Template Description:</label>
+                        <input type="text" id="template-description" class="form-control" 
+                            placeholder="Brief description of what this template does...">
+                        <small class="form-text">This helps you remember what the template is for.</small>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-primary" id="save-custom-prompt">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                        <button type="button" class="btn-secondary" id="cancel-custom-prompt" data-dialog-close>
+                            Cancel
+                        </button>
+                    </div>
+                </form>             
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Name Modal -->
+    <div class="modal-overlay is-hidden-by-default" id="add-name-modal" role="dialog" aria-modal="true" aria-labelledby="add-name-modal-title">
+        <div class="modal-content modal-content-narrow">
+            <div class="modal-header">
+                <h3 id="add-name-modal-title">Add New Prompt</h3>
+                <button type="button" class="close-btn" id="close-add-name-modal" aria-label="Close prompt dialog" data-dialog-close>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="new-prompt-name">Name:</label>
+                    <input type="text" id="new-prompt-name" placeholder="Enter name..." autofocus>
+                </div>
+                <div class="form-group is-hidden-by-default" id="new-template-description-group">
+                    <label for="new-template-description">Description (optional):</label>
+                    <input type="text" id="new-template-description" placeholder="Brief description...">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-primary" id="confirm-add-name">Create</button>
+                    <button type="button" class="btn-secondary" id="cancel-add-name" data-dialog-close>Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- World Context Modal -->
+    <div class="modal-overlay is-hidden-by-default" id="world-context-modal" role="dialog" aria-modal="true" aria-labelledby="world-context-modal-title">
+        <div class="modal-content world-context-modal">
+            <div class="modal-header">
+                <h2 id="world-context-modal-title">Edit World Context</h2>
+                <button type="button" class="close-btn" id="close-world-context" aria-label="Close world context dialog" data-dialog-close>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="context-name">Context Name:</label>
+                    <input type="text" id="context-name" placeholder="e.g., My Fantasy World">
+                </div>
+                <div class="form-group">
+                    <label for="context-content">World Context:</label>
+                    <textarea 
+                        id="context-content" 
+                        rows="12" 
+                        placeholder="Describe your world, characters, setting, lore, or anything else you want the AI to know about..."
+                    ></textarea>
+                    <div class="helper-text">
+                        This context will be included in every conversation to help the AI understand your world.
+                    </div>
+                </div>
+                <div class="world-context-actions">
+                    <button type="button" class="btn-primary" id="save-world-context">
+                        <i class="fas fa-save"></i> Save Context
+                    </button>
+                    <button type="button" class="btn-secondary" id="cancel-world-context" data-dialog-close>
+                        Cancel
+                    </button>
+                    <button type="button" class="btn-danger is-hidden-by-default" id="delete-world-context">
+                        <i class="fas fa-trash"></i> Delete Context
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Chat Modal -->
+    <div class="modal-overlay is-hidden-by-default" id="save-chat-modal" role="dialog" aria-modal="true" aria-labelledby="save-chat-title">
+        <div class="modal-content save-chat-modal">
+            <div class="modal-header">
+                <h2 id="save-chat-title">Save Chat</h2>
+                <button type="button" class="close-btn" id="close-save-chat" aria-label="Close save chat dialog" data-dialog-close>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="chat-save-name">Chat Name:</label>
+                    <input type="text" id="chat-save-name" placeholder="e.g., Character Development Session">
+                </div>
+                <div class="form-group">
+                    <label for="chat-save-folder">Folder:</label>
+                    <div class="custom-dropdown folder-dropdown" id="folder-dropdown">
+                        <input type="text" id="chat-save-folder" placeholder="Uncategorized" autocomplete="off">
+                        <button type="button" class="dropdown-toggle" id="folder-dropdown-toggle" aria-label="Choose chat folder">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-options folder-options is-hidden-by-default" id="folder-options">
+                            <!-- Folder options will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-primary" id="save-current-chat">
+                        <i class="fas fa-save"></i> Save Chat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Chat Modal -->
+    <div class="modal-overlay is-hidden-by-default" id="load-chat-modal" role="dialog" aria-modal="true" aria-labelledby="load-chat-title">
+        <div class="modal-content load-chat-modal">
+            <div class="modal-header">
+                <h2 id="load-chat-title">Load Chat</h2>
+                <button type="button" class="close-btn" id="close-load-chat" aria-label="Close load chat dialog" data-dialog-close>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="chat-library-toolbar">
+                    <div class="chat-library-search">
+                        <i class="fas fa-search" aria-hidden="true"></i>
+                        <label class="sr-only" for="chat-library-search">Search saved chats</label>
+                        <input type="search" id="chat-library-search" placeholder="Search chats or folders" autocomplete="off">
+                    </div>
+                    <div class="chat-library-summary" id="chat-library-summary" aria-live="polite"></div>
+                </div>
+                <p class="chat-library-help">
+                    Open a chat by selecting its row. Use <i class="fas fa-folder-tree" aria-hidden="true"></i> to move it between folders.
+                </p>
+                <div class="chats-by-folder" id="chats-by-folder">
+                    <div class="loading-state">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading saved chats...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overwrite Confirmation Modal -->
+    <div class="modal-overlay is-hidden-by-default" id="overwrite-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="overwrite-confirm-title">
+        <div class="modal-content confirm-modal">
+            <div class="modal-header">
+                <h3 id="overwrite-confirm-title">Chat Already Exists</h3>
+            </div>
+            <div class="modal-body">
+                <p id="overwrite-message">A chat with this name already exists. Do you want to overwrite it?</p>
+                <div class="modal-actions">
+                    <button type="button" class="btn-danger" id="confirm-overwrite">
+                        <i class="fas fa-save"></i> Overwrite
+                    </button>
+                    <button type="button" class="btn-secondary" id="cancel-overwrite" data-dialog-close>
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reusable CoWriter confirmation/input/folder dialog -->
+    <div class="modal-overlay is-hidden-by-default" id="cowriter-dialog-modal" role="dialog" aria-modal="true" aria-labelledby="cowriter-dialog-title" aria-describedby="cowriter-dialog-message">
+        <div class="modal-content confirm-modal coworkriter-dialog-content">
+            <div class="modal-header">
+                <div class="cowriter-dialog-heading">
+                    <span class="cowriter-dialog-icon" aria-hidden="true"><i class="fas fa-circle-question"></i></span>
+                    <h3 id="cowriter-dialog-title">Confirm action</h3>
+                </div>
+                <button type="button" class="close-btn" id="cowriter-dialog-close" aria-label="Close dialog" data-dialog-close>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="cowriter-dialog-form">
+                <div class="modal-body">
+                    <p id="cowriter-dialog-message"></p>
+                    <div class="form-group" id="cowriter-dialog-input-group" hidden>
+                        <label for="cowriter-dialog-input" id="cowriter-dialog-input-label">Name</label>
+                        <input type="text" id="cowriter-dialog-input" maxlength="200" autocomplete="off">
+                    </div>
+                    <div class="form-group" id="cowriter-dialog-folder-group" hidden>
+                        <label for="cowriter-dialog-folder">Destination folder</label>
+                        <select id="cowriter-dialog-folder"></select>
+                    </div>
+                    <div class="form-group" id="cowriter-dialog-new-folder-group" hidden>
+                        <label for="cowriter-dialog-new-folder">New folder name</label>
+                        <input type="text" id="cowriter-dialog-new-folder" maxlength="200" placeholder="e.g., Novel Drafts" autocomplete="off">
+                    </div>
+                    <p class="cowriter-dialog-validation" id="cowriter-dialog-validation" role="alert" hidden></p>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" id="cowriter-dialog-cancel" data-dialog-close>Cancel</button>
+                        <button type="button" class="btn-secondary" id="cowriter-dialog-alternate" hidden>Alternate action</button>
+                        <button type="submit" class="btn-primary" id="cowriter-dialog-confirm">Continue</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tags Management Modal -->
+    <div class="modal-overlay is-hidden-by-default" id="tags-modal" role="dialog" aria-modal="true" aria-labelledby="tags-modal-title">
+        <div class="modal-content tags-modal" tabindex="-1">
+            <div class="modal-header">
+                <h2 id="tags-modal-title">Manage Tags</h2>
+                <button type="button" class="close-btn btn-icon" id="close-tags-modal" aria-label="Close tags dialog" data-dialog-close>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="tags-input">Tags (comma-separated):</label>
+                    <textarea 
+                        id="tags-input" 
+                        rows="3" 
+                        placeholder="fantasy, worldbuilding, draft, characters..."
+                    ></textarea>
+                    <div class="helper-text">
+                        Separate tags with commas. Click existing tags below to add them quickly.
+                    </div>
+                </div>
+                
+                <div class="existing-tags-section">
+                    <h4>Existing Tags:</h4>
+                    <div class="existing-tags-chips" id="existing-tags-chips">
+                        <!-- Chips will be populated by JS -->
+                    </div>
+                </div>
+                
+                <div class="tags-actions">
+                    <button type="button" class="btn-primary" id="save-tags">
+                        <i class="fas fa-save"></i> Save Tags
+                    </button>
+                    <button type="button" class="btn-secondary" id="cancel-tags">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- All existing modals stay the same -->
+    <div class="modal-overlay" id="auth-modal" role="dialog" aria-modal="true" aria-label="Sign in or create an account" data-dialog-static>
+        <div class="modal-content auth-modal" tabindex="-1">
+            <div class="auth-tabs">
+                <button type="button" class="auth-tab active" data-tab="login">Login</button>
+                <button type="button" class="auth-tab" data-tab="register">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <div class="auth-form active" id="login-form">
+                <h2>Welcome Back</h2>
+                
+                <!-- User Selection Grid (NEW) -->
+                <div class="user-selection-grid" id="user-selection-grid">
+                    <div class="user-grid" id="user-grid">
+                        <!-- User cards will be populated by JavaScript -->
+                    </div>
+                    <div class="user-pagination is-hidden-by-default" id="user-pagination">
+                        <button class="pagination-btn" id="prev-users" type="button" aria-label="Previous users">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="pagination-btn" id="next-users" type="button" aria-label="Next users">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Login as [Username] button (hidden by default) -->
+                <button type="button" class="login-as-btn is-hidden-by-default" id="login-as-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login as <strong id="login-as-username"></strong></span>
+                </button>
+                
+                <form id="login-form-element">
+                    <div class="form-group">
+                        <label for="login-username">Username or Email:</label>
+                        <input type="text" id="login-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password:</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <!-- Remember Me: -->
+                    <div class="form-group compact-form-group">
+                        <label class="inline-check-label">
+                            <input type="checkbox" id="remember-me-checkbox">
+                            <span>Remember Me</span>
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Login</button>
+                    </div>
+                </form>
+                
+                <!-- Guest option in Login tab (NEW) -->
+                <div class="auth-guest-option">
+                    <button type="button" class="guest-link btn-quiet" id="continue-as-guest-login">Continue as Guest</button>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div class="auth-form" id="register-form">
+                <h2>Create Account</h2>
+                <form id="register-form-element">
+                    <div class="form-group">
+                        <label for="register-username">Username:</label>
+                        <input type="text" id="register-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email (optional):</label>
+                        <input type="email" id="register-email">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Password:</label>
+                        <input type="password" id="register-password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm">Confirm Password:</label>
+                        <input type="password" id="register-confirm" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Create Account</button>
+                    </div>
+                </form>
+                <div class="auth-guest-option">
+                    <button type="button" class="guest-link btn-quiet" id="continue-as-guest">Continue as Guest</button>
+                </div>
+            </div>
+            <!-- VERSION FOOTER -->
+            <div class="auth-version" id="auth-version">
+                Creator's Toolkit v<span id="version-number">...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal (existing) -->
+    <div class="modal-overlay is-hidden-by-default" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+        <div class="modal-content settings-modal" tabindex="-1">
+            <div class="modal-header">
+                <h2 id="settings-modal-title">Settings</h2>
+                <button type="button" class="close-btn btn-icon" id="close-settings" aria-label="Close settings" data-dialog-close>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Combined Avatar & Account Section -->
+                <div class="settings-section">
+                    <div class="section-header">
+                        <h3>Profile</h3>
+                        <span class="user-id-badge" id="user-id-badge"></span>
+                    </div>
+                    <div class="avatar-section">
+                        <div class="avatar-actions">
+                            <button type="button" class="current-avatar" id="avatar-picker-btn" title="Choose a new avatar" aria-label="Choose a new avatar">
+                                <img src="images/default-avatar.png" alt="" id="settings-avatar-preview">
+                            </button>
+                            <input type="file" id="avatar-upload" class="field-hidden" accept="image/png,image/jpeg,image/webp">
+                            <button type="button" class="btn-secondary btn-small avatar-reset-btn" id="reset-avatar-btn">
+                                <i class="fas fa-rotate-left" aria-hidden="true"></i>
+                                <span>Reset</span>
+                            </button>
+                        </div>
+                        <div class="account-fields">
+                            <form id="account-form">
+                                <div class="form-group">
+                                    <label for="settings-username">Username:</label>
+                                    <input type="text" id="settings-username">
+                                    <div class="helper-text">Your display name. Must be unique and at least 3 characters.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="settings-email">Email:</label>
+                                    <input type="email" id="settings-email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="settings-new-password">New Password (optional):</label>
+                                    <input type="password" id="settings-new-password">
+                                    <div class="helper-text">Leave blank to keep current password</div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Theme Section -->
+                <div class="settings-section">
+                    <h3>Theme</h3>
+                    <div class="form-group">
+                        <label for="theme-select">Color Theme:</label>
+                        <div class="custom-dropdown" id="theme-dropdown">
+                            <button type="button" class="dropdown-selected" id="theme-selected" aria-haspopup="listbox" aria-expanded="false">
+                                <span class="selected-text">Loading themes...</span>
+                                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </button>
+                            <div class="dropdown-options" id="theme-options" role="listbox">
+                                <!-- Options will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Markdown Theme Settings -->
+                    <div class="form-group">
+                        <label for="markdown-theme-select">Markdown Style:</label>
+                        <select id="markdown-theme-select">
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                        <div class="helper-text">
+                            Controls how markdown appears in Notebook preview and CoWriter messages
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="markdown-font-size">Markdown Font Size: <span id="markdown-font-size-display">14px</span></label>
+                        <input type="range" id="markdown-font-size" min="10" max="24" value="14">
+                    </div>
+                </div>
+
+                <!-- AI Tools Section -->
+                <div class="settings-section">
+                    <h3>AI Features</h3>
+                    <div class="form-group">
+                        <label class="inline-check-label">
+                            <input type="checkbox" id="ai-tools-enabled">
+                            <span>AI Tools Enabled</span>
+                        </label>
+                        <div class="helper-text">
+                            Shows optional AI-related features (CoWriter tab, Character Manager, Lorebook Manager). Core tools work without AI.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Config: -->
+                <div class="settings-section">
+                    <h3>AI Configuration</h3>
+                    <div class="form-group">
+                        <label for="main-provider-select">Provider:</label>
+                        <select id="main-provider-select">
+                            <option value="google">Google Gemini</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="main-nanogpt-mode-container" hidden>
+                        <label for="main-nanogpt-mode-select">NanoGPT billing/catalog mode:</label>
+                        <select id="main-nanogpt-mode-select">
+                            <option value="account">Account default</option>
+                            <option value="subscription">Subscription only</option>
+                            <option value="paid">Paid / extras catalog</option>
+                        </select>
+                        <small>Subscription only never falls through to paid chat usage.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="main-model-select">Model:</label>
+                        <input type="search" id="main-model-search" class="model-search" placeholder="Filter models by name or ID" autocomplete="off">
+                        <div class="model-controls-row">
+                            <select id="main-model-select">
+                                <option value="">Loading models...</option>
+                            </select>
+                            <button type="button" class="btn-secondary refresh-btn" id="main-refresh-models-btn" title="Refresh Models" aria-label="Refresh model catalog">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                            <label class="free-models-toggle is-hidden-by-default" id="main-free-models-toggle-container">
+                                <input type="checkbox" id="main-free-models-only">
+                                <span>Free only</span>
+                            </label>
+                        </div>
+                        <input type="text" id="main-manual-model-id" placeholder="Or enter a model ID manually" autocomplete="off">
+                        <div id="main-model-catalog-status" class="model-catalog-status" role="status" aria-live="polite"></div>
+                        <div id="main-model-details" class="model-details" hidden></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="main-api-key-input">API Key:</label>
+                        <div class="api-key-wrapper">
+                            <input type="password" id="main-api-key-input" placeholder="Enter your API key...">
+                            <button type="button" class="toggle-visibility-btn" id="main-toggle-api-key-btn" title="Show/Hide Key" aria-label="Show or hide API key">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="helper-text">
+                            Your API key is stored securely and only used for making requests to the LLM provider.
+                        </div>
+                        <div class="provider-key-actions">
+                            <button type="button" class="btn-danger btn-small" id="main-remove-api-key-btn" hidden>
+                                <i class="fas fa-key"></i> Remove saved key
+                            </button>
+                        </div>
+                    </div>
+                    <div class="api-status" id="main-api-status" role="status" aria-live="polite">
+                        <span class="status-indicator" id="main-status-indicator"></span>
+                        <span class="status-text" id="main-status-text">Not configured</span>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" id="main-test-connection-btn">
+                            <i class="fas fa-plug"></i> Test Connection
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Account Actions -->
+                <div class="settings-section">
+                    <div class="form-actions account-actions">
+                        <button type="submit" class="btn-primary" form="account-form">Update Account</button>
+                        <button type="button" class="btn-secondary" id="logout-btn">Logout</button>
+                    </div>
+
+                <!-- Delete Account Section -->
+                    <div class="delete-account-section">
+                        <p class="helper-text">Export any projects you want to retain before deleting your account. Deleted account files are moved to recoverable local staging.</p>
+                        <button type="button" class="btn-danger btn-small" id="delete-account-btn">
+                            <i class="fas fa-trash-alt"></i> Delete Account
+                        </button>
+                        <div class="helper-text delete-warning">
+                            Permanently delete your account and all associated data. This action cannot be undone.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div class="modal-overlay is-hidden-by-default" id="about-modal" role="dialog" aria-modal="true" aria-labelledby="about-title">
+        <div class="modal-content about-modal" tabindex="-1">
+            <div class="modal-header">
+                <h2 id="about-title">About Creator's Toolkit</h2>
+                <button type="button" class="close-btn btn-icon" id="close-about" aria-label="Close About" data-dialog-close>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- About Sidebar Navigation -->
+                <div class="about-sidebar" id="about-sidebar">
+                    <div id="about-toc">
+                        <h3>Contents</h3>
+                        <div class="toc-list">
+                            <!-- Table of contents will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- About Main Content -->
+                <div class="about-main">
+                    <div id="about-section-content">
+                        <!-- Content sections will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CoWriter About Modal -->
+    <div class="modal-overlay cowriter-about-overlay is-hidden-by-default" id="cowriter-about-modal" role="dialog" aria-modal="true" aria-labelledby="cowriter-about-title">
+        <div class="modal-content cowriter-about-content" tabindex="-1">
+            <div class="modal-header">
+                <h2 id="cowriter-about-title">CoWriter Guide</h2>
+                <button type="button" class="close-btn" id="cowriter-about-close" title="Close" aria-label="Close CoWriter guide" data-dialog-close>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="about-body">
+                <div class="about-sidebar">
+                    <h3>Contents</h3>
+                    <div id="cowriter-toc-container">
+                        <!-- Table of contents will be inserted here -->
+                    </div>
+                </div>
+                
+                <div class="about-main">
+                    <div id="cowriter-section-content">
+                        <!-- Section content will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error/Success Messages -->
+    <div class="toast-container" id="toast-container" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="user/legacy-auth-migration.js"></script>
+    <script src="user/auth.js"></script>
+    <script src="app/session-client.js"></script>
+    <script src="app/preferences-client.js"></script>
+    <script src="app/account-client.js"></script>
+    <script src="app/avatar-client.js"></script>
+    <script src="app/settings-services.js"></script>
+    <script src="app/tool-registry.js"></script>
+    <script src="app/tabs.js"></script>
+    <script src="app/navigation.js"></script>
+    <script src="app/user-menu.js"></script>
+    <script src="app/loading.js"></script>
+    <script src="app/notifications.js"></script>
+    <script src="app/dialogs.js"></script>
+    <script src="cowriter/cowriter-debug.js"></script>
+    <script src="cowriter/provider-key-client.js"></script>
+    <script src="cowriter/provider-settings-client.js"></script>
+    <script src="cowriter/model-catalog-ui.js"></script>
+    <script src="cowriter/cowriter-dialogs.js"></script>
+    <script src="settings.js"></script>
+    <script src="my-sites.js"></script>
+    <script src="notebook/markdown-security.js"></script>
+    <script src="notebook/note-save-queue.js"></script>
+    <script src="notebook/notebook-client.js"></script>
+    <script src="notebook/notebook-integration.js"></script>
+    <script src="notebook/notebook.js"></script>
+    <script src="notebook/notebook-themes.js"></script>
+    <script src="notebook/note-linking.js"></script>
+    <script src="notebook/collection-model.js"></script>
+    <script src="notebook/collections.js"></script>
+    <script src="notebook/notebook-workspace-manager.js"></script>
+    <script src="notebook/notebook-export.js"></script>
+    <script src="cowriter/chat-persistence.js"></script>
+    <script src="cowriter/markdown-security.js"></script>
+    <script src="cowriter/cowriter.js"></script>
+    <script src="cowriter/cowriter-about.js"></script>
+    <script src="cowriter/prompt-management.js"></script>
+    <script src="main.js"></script>
+    <script src="about/about.js"></script>
+    <script src="app/bootstrap.js"></script>
+</body>
+</html>

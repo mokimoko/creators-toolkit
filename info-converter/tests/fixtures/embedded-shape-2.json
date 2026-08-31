@@ -1,0 +1,30 @@
+{
+  "basic": {
+    "title": "Fixture Two",
+    "subtitle": "Options-era payload",
+    "overviewTitle": "Overview",
+    "overview": "Synthetic content"
+  },
+  "appearance": {
+    "template": "journal",
+    "overviewStyle": "journal",
+    "navigationStyle": "journal",
+    "colorScheme": "dark",
+    "fontSet": "serif"
+  },
+  "characters": [],
+  "charactersOptions": {
+    "showByFaction": false,
+    "showInfoDisplay": true
+  },
+  "storylines": [],
+  "storylinesOptions": {
+    "showTOC": false,
+    "showSections": true,
+    "showSubsections": false
+  },
+  "world": {
+    "characters": [],
+    "concepts": []
+  }
+}
