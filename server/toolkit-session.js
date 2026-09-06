@@ -62,6 +62,17 @@ function revokeToolkitSession(token) {
     return typeof token === 'string' && sessions.delete(token);
 }
 
+function revokeToolkitSessionsForUser(userId) {
+    let revoked = 0;
+    for (const [token, session] of sessions) {
+        if (!session.isGuest && session.userId === userId) {
+            sessions.delete(token);
+            revoked += 1;
+        }
+    }
+    return revoked;
+}
+
 function rotateToolkitSession(token, userContext, options = {}) {
     revokeToolkitSession(token);
     return createToolkitSession(userContext, options);
@@ -306,6 +317,8 @@ const PROJECT_ROUTES = new Set([
     'POST /roleplay/projects',
     'POST /roleplay/load',
     'POST /roleplay/save',
+    'POST /roleplay/export-story',
+    'POST /roleplay/export-universe',
     'POST /roleplay/check-images',
     'POST /roleplay/universes',
     'POST /roleplay/stories',
@@ -376,6 +389,7 @@ module.exports = {
     requireOwnedContext,
     rotateToolkitSession,
     revokeToolkitSession,
+    revokeToolkitSessionsForUser,
     setToolkitSessionCookie,
     sessionOwnsContext,
     TOOLKIT_SESSION_COOKIE,

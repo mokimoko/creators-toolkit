@@ -787,6 +787,93 @@ button,
     gap: 7px;
 }
 
+.download-menu {
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.download-menu-trigger {
+    white-space: nowrap;
+}
+
+.download-menu-chevron {
+    margin-left: 2px;
+    font-size: 9px;
+    opacity: 0.72;
+    transition: transform 140ms ease;
+}
+
+.download-menu.is-open .download-menu-chevron {
+    transform: rotate(180deg);
+}
+
+.download-menu-popover {
+    position: absolute;
+    z-index: 80;
+    top: calc(100% + 7px);
+    right: 0;
+    width: min(330px, calc(100vw - 32px));
+    padding: 6px;
+    border: 1px solid color-mix(in srgb, var(--accent-primary) 24%, var(--border-primary));
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--bg-secondary) 96%, black);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.42), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.download-menu-popover[hidden] {
+    display: none;
+}
+
+.generate-controls .download-menu-item {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    align-items: center;
+    width: 100%;
+    min-height: 52px;
+    padding: 8px 10px;
+    gap: 9px;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-primary);
+    text-align: left;
+}
+
+.download-menu-item > i {
+    color: var(--accent-primary);
+    font-size: 15px;
+    text-align: center;
+}
+
+.download-menu-item > span,
+.download-menu-item strong,
+.download-menu-item small {
+    display: block;
+}
+
+.download-menu-item strong {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+}
+
+.download-menu-item small {
+    margin-top: 2px;
+    color: var(--text-secondary);
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+.download-menu-item:not(:disabled):hover,
+.download-menu-item:not(:disabled):focus-visible {
+    background: color-mix(in srgb, var(--accent-primary) 12%, var(--bg-tertiary));
+    outline: none;
+}
+
+.download-menu-item:disabled {
+    cursor: not-allowed;
+    opacity: 0.46;
+}
+
 .github-sync-panel {
     margin-bottom: 12px;
     padding: 10px;
@@ -1110,6 +1197,10 @@ button,
 
     .generate-controls button {
         justify-content: center;
+        width: 100%;
+    }
+
+    .generate-controls .download-menu {
         width: 100%;
     }
 

@@ -1,5 +1,41 @@
 # Changelog
 
+## v4.0.2 - 09/06/2026
+
+This update makes generated work much easier to take outside Creator's Toolkit without manually browsing through the `users` folder.
+
+### What Changed
+
+**Lore Codex**
+- Replaced the standalone HTML action with a **Download** menu
+- Added **HTML File Only** for the current generated HTML
+- Added **Entire Project** to download the complete saved project folder as a ZIP
+
+**RP Archiver**
+- Replaced the standalone HTML action with a **Download** menu
+- Added **HTML File Only** for the current generated HTML
+- Added **Current Story** to download the story HTML, shared CSS, and only the images that story uses
+- Added **Entire Universe** to download every HTML file, the complete images folder, CSS, and supporting files in the saved Universe
+
+**Download Experience**
+- Package downloads preserve the same folder structure used by saved Toolkit projects so relative links continue to work
+- Download choices clearly indicate when a roleplay or project must be saved first
+- ZIPs stream directly to the browser with balanced compression to keep large image collections responsive
+- Download menus support keyboard navigation and compact screen layouts
+
+**Release Workflow**
+- The server package metadata is now the single source for the version displayed inside Creator's Toolkit
+- Added `npm run bump-version -- <version>` to update package metadata, the README title, and changelog heading from one version value
+
+**Accounts and Sign-In**
+- Refreshed the login and registration modal to match the rest of the Toolkit
+- Added security questions during registration and in account Settings for existing users
+- Added password reset by security question, with optional email reset codes when SMTP delivery is configured
+- Added administrator account management from sign-in and administrator Settings, with recoverable account deletion
+- Existing account records migrate automatically as administrators; accounts registered after the update begin as regular users
+
+---
+
 ## v4.0.1 - 09/06/2026
 
 This patch makes the Lore Codex and RP Archiver output workflows clearer and more consistent.

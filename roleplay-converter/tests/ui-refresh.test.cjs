@@ -18,7 +18,10 @@ test('editor opens on the preview-first workflow with clear actions', () => {
     assert.match(index, /class="tab active" id="preview-tab"/);
     assert.match(index, /id="convert-btn"[^>]*>[\s\S]*<span>Create<\/span>/);
     assert.match(index, /id="save-project-btn"[^>]*disabled>[\s\S]*Save Roleplay/);
-    assert.match(index, /id="export-html-btn"[^>]*disabled>[\s\S]*Download Raw HTML/);
+    assert.match(index, /id="export-html-btn"[^>]*disabled>[\s\S]*<span>Download<\/span>/);
+    assert.match(index, /data-download-action="html"[\s\S]*HTML File Only/);
+    assert.match(index, /data-download-action="story"[\s\S]*Current Story/);
+    assert.match(index, /data-download-action="universe"[\s\S]*Entire Universe/);
     assert.match(index, /id="download-fallback-btn"[\s\S]*Download instead/);
     assert.match(index, /id="copy-btn"[^>]*disabled>[\s\S]*Copy HTML/);
     assert.match(index, /id="preview-frame" title="Generated roleplay preview"/);

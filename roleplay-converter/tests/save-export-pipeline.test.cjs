@@ -21,11 +21,12 @@ test('save, browser export, and fallback download are explicit independent actio
     assert.match(index, /id="update-lore-copy-btn"[^>]*hidden disabled/);
     assert.match(index, /id="save-fallback"[^>]*hidden/);
     assert.match(main, /saveExport'\)\.saveProject\(\)/);
-    assert.match(main, /saveExport'\)\.exportHTML\(\)/);
+    assert.match(main, /saveExport'\)\.initializeDownloadMenu\(\)/);
     assert.match(main, /saveExport'\)\.downloadFallback\(\)/);
     assert.match(main, /saveExport'\)\.updateLoreCopies\(\)/);
     assert.match(saveExport, /function saveProject\(/);
     assert.match(saveExport, /function exportHTML\(/);
+    assert.match(saveExport, /function downloadSavedArchive\(/);
     assert.match(saveExport, /function downloadFallback\(/);
     assert.match(saveExport, /function updateLoreCopies\(/);
     assert.doesNotMatch(saveExport, /Falling back|setTimeout\(\(\) =>\s*\{?\s*(?:fallback|triggerBrowserDownload)/i);

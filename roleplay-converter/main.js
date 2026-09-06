@@ -19,6 +19,7 @@ function initializeRPArchiver() {
         initializeFormHandlers();
         window.RPArchiver.get('readThroughEditor').initialize();
         window.RPArchiver.get('saveExport').updateCreateButtonLabel();
+        window.RPArchiver.get('saveExport').initializeDownloadMenu();
 
         await window.RPArchiver.get('previewExport').loadCSSTemplates();
         await window.RPArchiver.get('about').initialize();
@@ -161,7 +162,6 @@ function initializeEventListeners() {
     const saveProjectBtn = document.getElementById('save-project-btn');
     const openSavedRoleplayBtn = document.getElementById('open-saved-roleplay-btn');
     const updateLoreCopyBtn = document.getElementById('update-lore-copy-btn');
-    const exportHTMLBtn = document.getElementById('export-html-btn');
     const downloadFallbackBtn = document.getElementById('download-fallback-btn');
 
     copyBtn?.addEventListener('click', event => {
@@ -182,11 +182,6 @@ function initializeEventListeners() {
     updateLoreCopyBtn?.addEventListener('click', async event => {
         event.preventDefault();
         await window.RPArchiver.get('saveExport').updateLoreCopies();
-    });
-
-    exportHTMLBtn?.addEventListener('click', event => {
-        event.preventDefault();
-        window.RPArchiver.get('saveExport').exportHTML();
     });
 
     downloadFallbackBtn?.addEventListener('click', event => {

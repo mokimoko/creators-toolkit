@@ -1068,14 +1068,18 @@
     <!-- All existing modals stay the same -->
     <div class="modal-overlay" id="auth-modal" role="dialog" aria-modal="true" aria-label="Sign in or create an account" data-dialog-static>
         <div class="modal-content auth-modal" tabindex="-1">
-            <div class="auth-tabs">
-                <button type="button" class="auth-tab active" data-tab="login">Login</button>
-                <button type="button" class="auth-tab" data-tab="register">Register</button>
-            </div>
+            <div id="auth-primary-view">
+                <div class="auth-intro">
+                    <span class="auth-kicker">Creator's Toolkit</span>
+                </div>
+                <div class="auth-tabs" role="tablist" aria-label="Account access">
+                    <button type="button" class="auth-tab active" data-tab="login" role="tab" aria-selected="true"><span>Sign in</span></button>
+                    <button type="button" class="auth-tab" data-tab="register" role="tab" aria-selected="false"><span>Create account</span></button>
+                </div>
 
             <!-- Login Form -->
             <div class="auth-form active" id="login-form">
-                <h2>Welcome Back</h2>
+                <p class="auth-section-label">Choose a remembered account or sign in manually.</p>
                 
                 <!-- User Selection Grid (NEW) -->
                 <div class="user-selection-grid" id="user-selection-grid">
@@ -1100,22 +1104,25 @@
                 
                 <form id="login-form-element">
                     <div class="form-group">
-                        <label for="login-username">Username or Email:</label>
-                        <input type="text" id="login-username" required>
+                        <label for="login-username">Username or email</label>
+                        <input type="text" id="login-username" autocomplete="username" required>
                     </div>
                     <div class="form-group">
-                        <label for="login-password">Password:</label>
-                        <input type="password" id="login-password" required>
+                        <div class="auth-label-row">
+                            <label for="login-password">Password</label>
+                            <button type="button" class="auth-text-link" id="forgot-password-link">Forgot password?</button>
+                        </div>
+                        <input type="password" id="login-password" autocomplete="current-password" required>
                     </div>
                     <!-- Remember Me: -->
                     <div class="form-group compact-form-group">
                         <label class="inline-check-label">
                             <input type="checkbox" id="remember-me-checkbox">
-                            <span>Remember Me</span>
+                            <span>Remember this account</span>
                         </label>
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="btn-primary">Login</button>
+                        <button type="submit" class="btn-primary">Sign in</button>
                     </div>
                 </form>
                 
@@ -1127,23 +1134,34 @@
 
             <!-- Register Form -->
             <div class="auth-form" id="register-form">
-                <h2>Create Account</h2>
+                <p class="auth-section-label">Keep projects, preferences, and recovery details together.</p>
                 <form id="register-form-element">
                     <div class="form-group">
-                        <label for="register-username">Username:</label>
-                        <input type="text" id="register-username" required>
+                        <label for="register-username">Username</label>
+                        <input type="text" id="register-username" autocomplete="username" required>
                     </div>
                     <div class="form-group">
-                        <label for="register-email">Email (optional):</label>
-                        <input type="email" id="register-email">
+                        <label for="register-email">Email <span class="auth-optional">optional</span></label>
+                        <input type="email" id="register-email" autocomplete="email">
                     </div>
                     <div class="form-group">
-                        <label for="register-password">Password:</label>
-                        <input type="password" id="register-password" required>
+                        <label for="register-password">Password</label>
+                        <input type="password" id="register-password" autocomplete="new-password" required>
                     </div>
                     <div class="form-group">
-                        <label for="register-confirm">Confirm Password:</label>
-                        <input type="password" id="register-confirm" required>
+                        <label for="register-confirm">Confirm password</label>
+                        <input type="password" id="register-confirm" autocomplete="new-password" required>
+                    </div>
+                    <div class="auth-recovery-fields">
+                        <div class="form-group">
+                            <label for="register-security-question">Security question <span class="auth-optional">optional</span></label>
+                            <input type="text" id="register-security-question" maxlength="160" placeholder="A question only you can answer">
+                        </div>
+                        <div class="form-group">
+                            <label for="register-security-answer">Security answer</label>
+                            <input type="password" id="register-security-answer" maxlength="160" autocomplete="off">
+                            <div class="helper-text">Used locally if email recovery is unavailable.</div>
+                        </div>
                     </div>
                     <div class="form-actions">
                         <button type="submit" class="btn-primary">Create Account</button>
@@ -1153,9 +1171,65 @@
                     <button type="button" class="guest-link btn-quiet" id="continue-as-guest">Continue as Guest</button>
                 </div>
             </div>
+            </div>
+
+            <section class="auth-aux-panel" id="password-recovery-panel" hidden>
+                <button type="button" class="auth-back-btn" data-auth-back><i class="fas fa-arrow-left" aria-hidden="true"></i> Back to sign in</button>
+                <span class="auth-kicker">Account recovery</span>
+                <h2>Reset your password</h2>
+                <p class="auth-panel-copy">Enter an email to receive a reset code, or a username to use the account's security question.</p>
+                <form id="recovery-start-form">
+                    <div class="form-group">
+                        <label for="recovery-identifier">Username or email</label>
+                        <input type="text" id="recovery-identifier" autocomplete="username" required>
+                    </div>
+                    <button type="submit" class="btn-primary auth-wide-button">Continue</button>
+                </form>
+                <form id="recovery-reset-form" hidden>
+                    <p class="auth-challenge" id="recovery-challenge"></p>
+                    <div class="form-group">
+                        <label for="recovery-credential" id="recovery-credential-label">Reset code</label>
+                        <input type="text" id="recovery-credential" autocomplete="one-time-code" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="recovery-password">New password</label>
+                        <input type="password" id="recovery-password" autocomplete="new-password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="recovery-confirm">Confirm new password</label>
+                        <input type="password" id="recovery-confirm" autocomplete="new-password" required>
+                    </div>
+                    <button type="submit" class="btn-primary auth-wide-button">Reset password</button>
+                </form>
+                <p class="auth-status" id="recovery-status" role="status" aria-live="polite"></p>
+            </section>
+
+            <section class="auth-aux-panel" id="account-manager-panel" hidden>
+                <button type="button" class="auth-back-btn" id="admin-manager-back" data-auth-back><i class="fas fa-arrow-left" aria-hidden="true"></i><span id="admin-manager-back-label">Back to sign in</span></button>
+                <span class="auth-kicker">Administrator</span>
+                <h2>Manage accounts</h2>
+                <form id="admin-unlock-form">
+                    <p class="auth-panel-copy">Confirm an administrator account before viewing or deleting local accounts.</p>
+                    <div class="form-group">
+                        <label for="admin-username">Username or email</label>
+                        <input type="text" id="admin-username" autocomplete="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-password">Password</label>
+                        <input type="password" id="admin-password" autocomplete="current-password" required>
+                    </div>
+                    <button type="submit" class="btn-primary auth-wide-button">Unlock account manager</button>
+                </form>
+                <div id="admin-account-view" hidden>
+                    <p class="auth-panel-copy">Deleted files are moved to the same recoverable staging area used by self-service deletion.</p>
+                    <div class="admin-account-list" id="admin-account-list"></div>
+                </div>
+                <p class="auth-status" id="admin-status" role="status" aria-live="polite"></p>
+            </section>
             <!-- VERSION FOOTER -->
             <div class="auth-version" id="auth-version">
-                Creator's Toolkit v<span id="version-number">...</span>
+                <button type="button" class="auth-manage-link" id="manage-accounts-link" hidden>Manage accounts</button>
+                <span>Creator's Toolkit v<span data-toolkit-version>...</span></span>
             </div>
         </div>
     </div>
@@ -1202,6 +1276,15 @@
                                     <label for="settings-new-password">New Password (optional):</label>
                                     <input type="password" id="settings-new-password">
                                     <div class="helper-text">Leave blank to keep current password</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="settings-security-question">Security question:</label>
+                                    <input type="text" id="settings-security-question" maxlength="160" placeholder="A question only you can answer">
+                                </div>
+                                <div class="form-group">
+                                    <label for="settings-security-answer">New security answer:</label>
+                                    <input type="password" id="settings-security-answer" maxlength="160" autocomplete="off">
+                                    <div class="helper-text">Enter both fields to add or replace account recovery.</div>
                                 </div>
                             </form>
                         </div>
@@ -1324,6 +1407,9 @@
                 <div class="settings-section">
                     <div class="form-actions account-actions">
                         <button type="submit" class="btn-primary" form="account-form">Update Account</button>
+                        <button type="button" class="btn-secondary" id="settings-manage-accounts-btn" hidden>
+                            <i class="fas fa-users-cog" aria-hidden="true"></i> Manage Accounts
+                        </button>
                         <button type="button" class="btn-secondary" id="logout-btn">Logout</button>
                     </div>
 
@@ -1397,6 +1483,10 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="toolkit-corner-version" aria-label="Creator's Toolkit version">
+        v<span data-toolkit-version>...</span>
     </div>
 
     <!-- Error/Success Messages -->

@@ -1,4 +1,4 @@
-# Creator's Toolkit v4.0.1
+# Creator's Toolkit v4.0.2
 
 A comprehensive writing suite for writers, roleplayers, and creatives of all types. 
 
@@ -166,6 +166,17 @@ Keep `.cowriter-key-store/master.key` with the rest of the `users/` folder when 
 - Look for `.backup.json` files in your settings folder
 - **Always keep a backup of your `users/userID` folder.** This is where all of your project information is located.
 
+### Password-recovery email setup (optional)
+
+Security-question recovery works locally without extra setup. To send password-reset codes by email, start the Toolkit with these environment variables configured for your SMTP provider:
+
+- `CT_SMTP_HOST` and `CT_SMTP_PORT`
+- `CT_SMTP_USER` and `CT_SMTP_PASS` when authentication is required
+- `CT_SMTP_FROM` for the sender address
+- `CT_SMTP_SECURE=true` for implicit TLS (normally port 465)
+
+The Toolkit sends a short-lived reset code; it never stores or emails a recoverable password.
+
 ### Batch/Shell Script Issues
 - If you downloaded from GitHub and get script errors, the line endings may be corrupted
 - Delete and recreate the script files with proper line endings
@@ -178,3 +189,13 @@ Keep `.cowriter-key-store/master.key` with the rest of the `users/` folder when 
 - No internet is required for the local tools after setup; updates, AI providers, GitHub publishing, and hosted shared comments do require it
 - Your projects remain private unless you choose to share them
 - User passwords are securely hashed with bcrypt
+
+## Releasing a New Version
+
+The version in `server/package.json` is the Toolkit's runtime source of truth. From the `server` folder, enter the new version once:
+
+```powershell
+npm run bump-version -- 4.0.3
+```
+
+The command validates the version and updates `package.json`, `package-lock.json`, the README title, and the changelog heading. For a new release, replace the generated changelog placeholder with the release notes before publishing.

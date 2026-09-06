@@ -505,6 +505,22 @@ button:active {
     pointer-events: none;
 }
 
+.toolkit-corner-version {
+    position: fixed;
+    right: max(10px, env(safe-area-inset-right));
+    bottom: max(7px, env(safe-area-inset-bottom));
+    z-index: 20;
+    color: var(--text-muted);
+    font-family: "DM Mono", monospace;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.035em;
+    line-height: 1;
+    opacity: 0.52;
+    pointer-events: none;
+    user-select: none;
+}
+
 .toast {
     background-color: var(--bg-tertiary);
     border: 1px solid var(--border-secondary);

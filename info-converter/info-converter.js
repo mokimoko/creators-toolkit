@@ -135,6 +135,7 @@ function setCurrentProjectContext(projectName) {
     currentProject = projectName || null;
     window.currentProject = currentProject;
     globalThis.updateGenerateButtonState?.();
+    window.updateDownloadMenuState?.();
 }
 
 // Current editing state - make globally accessible
@@ -260,6 +261,9 @@ let updateQuickLoadState;
 let updateQuickOpenState;
 let downloadEditableArchive;
 let downloadHTML;
+let downloadProject;
+let initializeDownloadMenu;
+let updateDownloadMenuState;
 let importHTML;
 let resetForm;
 let initializeAppearanceColorPickers;
@@ -405,13 +409,17 @@ savePublishController = createSavePublishController({
 ({
     downloadEditableArchive,
     downloadHTML,
+    downloadProject,
     importHTML,
+    initializeDownloadMenu,
+    updateDownloadMenuState,
     resetForm
 } = createDocumentActions({
     checkAssetsFolder: (...args) => checkAssetsFolder(...args),
     clearCurrentProject: () => setCurrentProjectContext(null),
     collectFormData: () => globalThis.collectFormData(),
     generateHTML: () => globalThis.generateHTML(),
+    getContext: () => ({ isLocal, currentProject, userSessionManager }),
     notifyUser: message => window.notifyLoreUser(message),
     parseImportedHTML: async content => {
         await window.LoreFeatureLifecycle.ensureFeature('projectImporter');
@@ -489,6 +497,7 @@ imageImportController = createImageImportController({
     addSubArc: () => globalThis.addSubArc(),
     downloadEditableArchive,
     downloadHTML,
+    initializeDownloadMenu,
     generateHTML: () => globalThis.generateHTML(),
     importHTML,
     openCharactersOptionsModal: () => globalThis.openCharactersOptionsModal(),
@@ -637,6 +646,7 @@ window.userSessionManager = userSessionManager;
 
 // Make utility functions globally available
 window.resetForm = resetForm;
+window.updateDownloadMenuState = updateDownloadMenuState;
 window.loadProjects = loadProjects;
 window.saveToSitesFolder = saveToSitesFolder;
 window.openCurrentProject = openCurrentProject;

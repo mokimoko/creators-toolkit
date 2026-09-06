@@ -61,9 +61,11 @@ async function main() {
     assert.match(domainButtons, /classList\.add\('is-generating'\)/, 'Create exposes a visible in-progress state');
     assert.match(domainButtons, /setAttribute\('aria-busy', 'true'\)/, 'Create exposes its busy state to assistive technology');
     assert.match(domainButtons, /requestAnimationFrame/, 'Create paints its progress state before synchronous generation');
-    assert.match(domainButtons, /lockedButtons:[\s\S]*save-to-sites-btn[\s\S]*download-btn/, 'Save and raw HTML download stay locked throughout generation');
+    assert.match(domainButtons, /lockedButtons:[\s\S]*save-to-sites-btn[\s\S]*download-btn/, 'Save and download actions stay locked throughout generation');
     assert.match(domainButtons, /onSettled: actions\.updateSaveButtonState/, 'Save state is recalculated only after generation settles');
     assert.match(read('css/editor-refresh.css'), /\.btn-main-action\.is-generating::before/, 'Create has an in-button progress indicator');
+    assert.match(index, /data-download-action="html"[\s\S]*HTML File Only/, 'Download menu retains the standalone HTML option');
+    assert.match(index, /data-download-action="project"[\s\S]*Entire Project/, 'Download menu exposes the complete saved project');
     assert.match(index, /family=Instrument\+Sans/, 'Precision Brass uses its selected control typeface');
 
     const helperContext = {};

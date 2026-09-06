@@ -6,6 +6,8 @@ const ACCOUNT_POLICY = Object.freeze({
     username: Object.freeze({ minLength: 3, maxLength: 64, pattern: '^[A-Za-z0-9 _.-]+$' }),
     password: Object.freeze({ minLength: 6, maxLength: 256 }),
     email: Object.freeze({ maxLength: 254 }),
+    securityQuestion: Object.freeze({ minLength: 8, maxLength: 160 }),
+    securityAnswer: Object.freeze({ minLength: 2, maxLength: 160 }),
     uniqueness: 'case-insensitive'
 });
 
@@ -44,6 +46,25 @@ function validatePassword(value) {
     return password;
 }
 
+function normalizeSecurityQuestion(value) {
+    if (value === null || value === undefined || String(value).trim() === '') return null;
+    const question = String(value).trim();
+    const policy = ACCOUNT_POLICY.securityQuestion;
+    if (question.length < policy.minLength || question.length > policy.maxLength) {
+        throw new AccountError(`Security question must be ${policy.minLength}-${policy.maxLength} characters`);
+    }
+    return question;
+}
+
+function normalizeSecurityAnswer(value) {
+    const answer = String(value || '').trim().replace(/\s+/g, ' ').toLocaleLowerCase('en-US');
+    const policy = ACCOUNT_POLICY.securityAnswer;
+    if (answer.length < policy.minLength || answer.length > policy.maxLength) {
+        throw new AccountError(`Security answer must be ${policy.minLength}-${policy.maxLength} characters`);
+    }
+    return answer;
+}
+
 function findDuplicate(accounts, field, value, excludedId = null) {
     if (value === null) return null;
     const normalized = String(value).toLocaleLowerCase('en-US');
@@ -64,6 +85,9 @@ function canonicalProfile(user, avatarVersion = 0) {
         lastLogin: user.lastLogin,
         isGuest: false,
         isPremium: user.isPremium === true,
+        isAdmin: user.isAdmin === true,
+        securityQuestion: user.securityQuestion || null,
+        hasSecurityQuestion: Boolean(user.securityQuestion && user.securityAnswerHash),
         avatar: '/api/user/avatar',
         avatarVersion
     };
@@ -78,6 +102,7 @@ class AccountService {
         this.updateRememberedUsername = options.updateRememberedUsername;
         this.rotateToolkitSession = options.rotateToolkitSession;
         this.revokeToolkitSession = options.revokeToolkitSession;
+        this.revokeToolkitSessionsForUser = options.revokeToolkitSessionsForUser;
         this.avatarService = options.avatarService;
         this.writeChain = Promise.resolve();
     }
@@ -99,10 +124,10 @@ class AccountService {
             const user = accounts[userContext.userId];
             if (!user) throw new AccountError('User not found', 404);
 
-            const allowed = new Set(['username', 'email', 'password', 'currentPassword']);
+            const allowed = new Set(['username', 'email', 'password', 'securityQuestion', 'securityAnswer', 'currentPassword']);
             const unknown = Object.keys(updates || {}).filter(key => !allowed.has(key));
             if (unknown.length) throw new AccountError(`Unknown profile update: ${unknown[0]}`);
-            const hasSensitiveChange = ['username', 'email', 'password'].some(key => (
+            const hasSensitiveChange = ['username', 'email', 'password', 'securityQuestion', 'securityAnswer'].some(key => (
                 updates?.[key] !== undefined
             ));
             if (!hasSensitiveChange) throw new AccountError('No profile changes provided');
@@ -118,9 +143,18 @@ class AccountService {
 
             const usernameChanged = username !== user.username;
             const passwordChanged = updates.password !== undefined;
+            const recoveryChanged = updates.securityQuestion !== undefined || updates.securityAnswer !== undefined;
             user.username = username;
             user.email = email;
             if (passwordChanged) user.passwordHash = await bcrypt.hash(validatePassword(updates.password), 10);
+            if (recoveryChanged) {
+                const question = normalizeSecurityQuestion(updates.securityQuestion);
+                if (!question || updates.securityAnswer === undefined) {
+                    throw new AccountError('A security question and answer are both required');
+                }
+                user.securityQuestion = question;
+                user.securityAnswerHash = await bcrypt.hash(normalizeSecurityAnswer(updates.securityAnswer), 10);
+            }
             accounts[user.id] = user;
             if (!await this.saveAccounts(accounts)) throw new AccountError('Failed to save profile updates', 500);
 
@@ -151,6 +185,40 @@ class AccountService {
             if (!user) throw new AccountError('User not found', 404);
             if (!await bcrypt.compare(password, user.passwordHash)) throw new AccountError('Incorrect password', 401);
 
+            return this.deleteAccountRecord(accounts, user, toolkitSessionToken);
+        });
+    }
+
+    async listAccounts(adminContext) {
+        const accounts = await this.loadAccounts();
+        const admin = accounts[adminContext.userId];
+        if (!admin?.isAdmin) throw new AccountError('Administrator access required', 403);
+        return Object.values(accounts)
+            .map(user => ({
+                id: user.id,
+                username: user.username,
+                email: user.email || null,
+                isAdmin: user.isAdmin === true,
+                createdAt: user.createdAt
+            }))
+            .sort((left, right) => left.username.localeCompare(right.username));
+    }
+
+    async deleteAccountAsAdmin(adminContext, targetUserId) {
+        return this.serialize(async () => {
+            const accounts = await this.loadAccounts();
+            const admin = accounts[adminContext.userId];
+            if (!admin?.isAdmin) throw new AccountError('Administrator access required', 403);
+            const user = accounts[targetUserId];
+            if (!user) throw new AccountError('User not found', 404);
+            if (user.isAdmin && Object.values(accounts).filter(account => account.isAdmin === true).length === 1) {
+                throw new AccountError('Create another administrator before deleting the last admin account', 409);
+            }
+            return this.deleteAccountRecord(accounts, user, null);
+        });
+    }
+
+    async deleteAccountRecord(accounts, user, toolkitSessionToken) {
             const userFolder = path.join(this.usersFolder, user.id);
             const trashFolder = path.join(this.usersFolder, '.trash', 'account-deletions');
             const deletionId = `${user.id}-${Date.now()}`;
@@ -164,7 +232,8 @@ class AccountService {
 
             try {
                 await this.clearRememberedSession(user.id);
-                this.revokeToolkitSession(toolkitSessionToken);
+                if (toolkitSessionToken) this.revokeToolkitSession(toolkitSessionToken);
+                this.revokeToolkitSessionsForUser?.(user.id);
                 deletionPlan.sessions = 'revoked';
             } catch {
                 throw new AccountError('Sessions could not be revoked; the account and user files were not changed', 500);
@@ -194,7 +263,6 @@ class AccountService {
                 sessionsRevoked: true,
                 backupGuidance: 'Export any projects you want to retain before deleting an account.'
             };
-        });
     }
 
     serialize(operation) {
@@ -211,6 +279,8 @@ module.exports = {
     canonicalProfile,
     findDuplicate,
     normalizeEmail,
+    normalizeSecurityAnswer,
+    normalizeSecurityQuestion,
     normalizeUsername,
     validatePassword
 };

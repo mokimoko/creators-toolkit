@@ -75,7 +75,7 @@
         {
           "id": "generate",
           "title": "Export Your Story",
-          "content": "Click **Create** to create your story file. Preview the HTML, then copy or save it. Save creates folders: \"userID/roleplays/universeName/\" with an images folder for your assets.\n\nThe generated HTML includes all your content, styling, and interactive features."
+      "content": "Click **Create** to create your story file. Preview the HTML, then copy it or use **Save Roleplay** to store it in the Toolkit. The **Download** menu can save the HTML file alone, package the current story with its CSS and required images, or download the entire saved Universe. Saved roleplays use \"userID/roleplays/universeName/\" with an images folder for your assets.\n\nThe generated HTML includes all your content, styling, and interactive features."
         },
         {
           "id": "loading",

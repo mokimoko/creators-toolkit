@@ -78,7 +78,7 @@
     {
       "id": "generate",
       "title": "Export",
-      "content": "When your project is ready, the Export tab creates the HTML for your site. It provides both an HTML preview and a visual preview (without images). You can either download the HTML directly or save it to your \"sites\" folder. Files are saved in \"sites/projectname\", which is created automatically if it doesn’t already exist. Each generation produces a fresh version of your site."
+      "content": "When your project is ready, the Export tab creates the HTML for your site and provides both a code view and a visual preview. Use **Download** to save the current HTML file by itself or download the entire saved project as a ZIP. You can also save or update the project in your \"sites\" folder. Files are saved in \"sites/projectname\", which is created automatically if it doesn’t already exist. Each generation produces a fresh version of your site."
     },
     {
       "id": "rename",

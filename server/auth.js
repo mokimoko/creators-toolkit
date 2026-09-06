@@ -11,6 +11,7 @@ const {
     getToolkitSession,
     rotateToolkitSession,
     revokeToolkitSession,
+    revokeToolkitSessionsForUser,
     setToolkitSessionCookie
 } = require('./toolkit-session');
 const {
@@ -48,9 +49,12 @@ const {
     AccountService,
     findDuplicate,
     normalizeEmail,
+    normalizeSecurityAnswer,
+    normalizeSecurityQuestion,
     normalizeUsername,
     validatePassword
 } = require('./account-service');
+const { PasswordRecoveryService } = require('./password-recovery-service');
 const { AVATAR_MAX_BYTES, AvatarError, AvatarService } = require('./avatar-service');
 const {
     PreferenceError,
@@ -85,7 +89,14 @@ const accountService = new AccountService({
     updateRememberedUsername: updateRememberedSessionUsername,
     rotateToolkitSession,
     revokeToolkitSession,
+    revokeToolkitSessionsForUser,
     avatarService
+});
+const passwordRecoveryService = new PasswordRecoveryService({
+    loadAccounts,
+    saveAccounts,
+    clearRememberedSession: clearUserSession,
+    revokeToolkitSessionsForUser
 });
 const avatarUpload = multer({
     storage: multer.memoryStorage(),
@@ -127,6 +138,11 @@ router.post('/auth/register', async (req, res) => {
         const username = normalizeUsername(req.body.username);
         const email = normalizeEmail(req.body.email);
         const password = validatePassword(req.body.password);
+        const securityQuestion = normalizeSecurityQuestion(req.body.securityQuestion);
+        const hasSecurityAnswer = req.body.securityAnswer !== undefined && String(req.body.securityAnswer).trim() !== '';
+        if (Boolean(securityQuestion) !== hasSecurityAnswer) {
+            return res.status(400).json({ error: 'A security question and answer are both required' });
+        }
 
         const accounts = await loadAccounts();
         if (findDuplicate(accounts, 'username', username)) return res.status(409).json({ error: 'Username already taken' });
@@ -135,13 +151,20 @@ router.post('/auth/register', async (req, res) => {
         // Create new user
         const userId = generateUserId();
         const passwordHash = await bcrypt.hash(password, 10);
+        const securityAnswerHash = securityQuestion
+            ? await bcrypt.hash(normalizeSecurityAnswer(req.body.securityAnswer), 10)
+            : null;
         
         const newUser = {
             id: userId,
             username,
             email,
             passwordHash,
+            isAdmin: false,
+            authSchemaVersion: 2,
             isPremium: false,
+            securityQuestion,
+            securityAnswerHash,
             createdAt: Date.now(),
             lastLogin: Date.now(),
             preferences: createDefaultPreferences()
@@ -403,6 +426,76 @@ router.get('/auth/account-policy', (req, res) => {
     res.json(ACCOUNT_POLICY);
 });
 
+router.post('/auth/recovery/start', async (req, res) => {
+    if (!IS_LOCAL) return res.status(403).json({ error: 'Password recovery is not available here' });
+    try {
+        return res.json({ success: true, ...await passwordRecoveryService.begin(req.body.identifier) });
+    } catch (error) {
+        return sendServiceError(res, error, 'Could not start password recovery');
+    }
+});
+
+router.post('/auth/recovery/reset', async (req, res) => {
+    if (!IS_LOCAL) return res.status(403).json({ error: 'Password recovery is not available here' });
+    try {
+        return res.json(await passwordRecoveryService.reset(req.body));
+    } catch (error) {
+        return sendServiceError(res, error, 'Could not reset password');
+    }
+});
+
+router.get('/auth/admin/status', async (req, res) => {
+    if (!IS_LOCAL) return res.json({ available: false });
+    const accounts = await loadAccounts();
+    return res.json({ available: Object.values(accounts).some(account => account.isAdmin === true) });
+});
+
+router.post('/auth/admin/session', async (req, res) => {
+    if (!IS_LOCAL) return res.status(403).json({ error: 'Account management is not available here' });
+    try {
+        const accounts = await loadAccounts();
+        const login = String(req.body.usernameOrEmail || '').trim().toLocaleLowerCase('en-US');
+        const admin = Object.values(accounts).find(account => (
+            String(account.username || '').toLocaleLowerCase('en-US') === login
+            || String(account.email || '').toLocaleLowerCase('en-US') === login
+        ));
+        if (!admin || !admin.isAdmin || !await bcrypt.compare(String(req.body.password || ''), admin.passwordHash)) {
+            return res.status(401).json({ error: 'Administrator credentials are incorrect' });
+        }
+        const adminSessionToken = createToolkitSession({ userId: admin.id, username: admin.username, isGuest: false }, {
+            ttlMs: 30 * 60 * 1000
+        });
+        return res.json({ success: true, adminSessionToken, admin: { id: admin.id, username: admin.username } });
+    } catch (error) {
+        return sendServiceError(res, error, 'Could not authenticate administrator');
+    }
+});
+
+async function getAdminContext(req) {
+    const session = getToolkitSession(getRequestToken(req));
+    if (!session || session.isGuest) throw new AccountError('Administrator session required', 401);
+    const accounts = await loadAccounts();
+    if (!accounts[session.userId]?.isAdmin) throw new AccountError('Administrator access required', 403);
+    return getCanonicalUserContext(session);
+}
+
+router.get('/auth/admin/accounts', async (req, res) => {
+    try {
+        return res.json({ success: true, accounts: await accountService.listAccounts(await getAdminContext(req)) });
+    } catch (error) {
+        return sendServiceError(res, error, 'Could not load accounts');
+    }
+});
+
+router.delete('/auth/admin/accounts/:userId', async (req, res) => {
+    try {
+        const result = await accountService.deleteAccountAsAdmin(await getAdminContext(req), req.params.userId);
+        return res.json({ success: true, message: 'Account deleted and user files moved to recoverable staging', ...result });
+    } catch (error) {
+        return sendServiceError(res, error, 'Could not delete account');
+    }
+});
+
 // Get list of registered users (for login screen) - ONLY REMEMBERED USERS
 router.get('/auth/users', async (req, res) => {
     if (!IS_LOCAL) {
@@ -410,12 +503,14 @@ router.get('/auth/users', async (req, res) => {
     }
 
     try {
-        const rememberedUsers = await getRememberedUsers(); // CHANGED THIS
+        const rememberedUsers = await getRememberedUsers();
+        const accounts = await loadAccounts();
         
         // Return only safe user info
         const users = rememberedUsers.map(user => ({
             id: user.userId,
             username: user.username,
+            isAdmin: accounts[user.userId]?.isAdmin === true,
             // Private avatar data is available after the account owns a Toolkit session.
             avatar: `/${DEFAULT_AVATAR}`
         }));

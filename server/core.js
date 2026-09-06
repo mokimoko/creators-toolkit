@@ -294,6 +294,34 @@ async function initializeUserSystem() {
             await writeJsonAtomic(ACCOUNTS_FILE, {}, { backup: false });
             console.log('✅ Created accounts.json');
         }
+
+        // Keep older account files compatible with the current authentication schema.
+        const accounts = await loadAccounts();
+        let accountsChanged = false;
+        for (const account of Object.values(accounts)) {
+            // Accounts created before admin roles existed belong to the installation
+            // owner, so preserve that trust when upgrading. Newly registered accounts
+            // carry schema version 2 and begin as regular users.
+            if (!Number.isInteger(account.authSchemaVersion) || account.authSchemaVersion < 2) {
+                account.isAdmin = true;
+                account.authSchemaVersion = 2;
+                accountsChanged = true;
+            } else if (typeof account.isAdmin !== 'boolean') {
+                account.isAdmin = false;
+                accountsChanged = true;
+            }
+            if (!Object.hasOwn(account, 'securityQuestion')) {
+                account.securityQuestion = null;
+                accountsChanged = true;
+            }
+            if (!Object.hasOwn(account, 'securityAnswerHash')) {
+                account.securityAnswerHash = null;
+                accountsChanged = true;
+            }
+        }
+        if (accountsChanged && !await saveAccounts(accounts)) {
+            throw new Error('Could not migrate account records');
+        }
         
         console.log('✅ File-based user system initialized');
         console.log(`📁 Users folder: ${USERS_FOLDER}`);

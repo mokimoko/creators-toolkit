@@ -740,6 +740,11 @@ class SettingsManager {
             this.showDeleteConfirmation();
         });
 
+        document.getElementById('settings-manage-accounts-btn')?.addEventListener('click', () => {
+            this.closeSettings();
+            this.authManager.openAccountManagerForCurrentAdmin();
+        });
+
         // ESC key to close modal
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -873,6 +878,9 @@ class SettingsManager {
         document.getElementById('settings-username').value = user.username || '';
         document.getElementById('settings-email').value = user.email || '';
         document.getElementById('settings-new-password').value = '';
+        document.getElementById('settings-security-question').value = user.securityQuestion || '';
+        document.getElementById('settings-security-answer').value = '';
+        document.getElementById('settings-manage-accounts-btn').hidden = user.isAdmin !== true;
         
         // Set avatar preview using the server URL
         const avatarPreview = document.getElementById('settings-avatar-preview');
@@ -920,6 +928,8 @@ class SettingsManager {
             const passwordField = document.getElementById('settings-new-password');
             passwordField.disabled = true;
             passwordField.placeholder = 'Available with account';
+            document.getElementById('settings-security-question').disabled = true;
+            document.getElementById('settings-security-answer').disabled = true;
             
             // Hide delete account section
             const deleteSection = document.querySelector('.delete-account-section');
@@ -946,6 +956,8 @@ class SettingsManager {
             const passwordField = document.getElementById('settings-new-password');
             passwordField.disabled = false;
             passwordField.placeholder = 'New password (leave blank to keep current)';
+            document.getElementById('settings-security-question').disabled = false;
+            document.getElementById('settings-security-answer').disabled = false;
             
             const deleteSection = document.querySelector('.delete-account-section');
             if (deleteSection) {
@@ -982,6 +994,8 @@ class SettingsManager {
         const username = document.getElementById('settings-username').value.trim();
         const email = document.getElementById('settings-email').value.trim();
         const newPassword = document.getElementById('settings-new-password').value;
+        const securityQuestion = document.getElementById('settings-security-question').value.trim();
+        const securityAnswer = document.getElementById('settings-security-answer').value.trim();
 
         // Clear previous errors
         this.clearFormErrors();
@@ -1012,10 +1026,16 @@ class SettingsManager {
             return;
         }
 
+        const recoveryChanged = Boolean(securityAnswer) || securityQuestion !== (user.securityQuestion || '');
+        if (recoveryChanged && (!securityQuestion || !securityAnswer)) {
+            this.showFormError(!securityQuestion ? 'settings-security-question' : 'settings-security-answer', 'Enter both a security question and a new answer');
+            return;
+        }
+
         // Check if account details changed
         const hasAccountChanges = username !== user.username || 
                                 email !== user.email || 
-                                newPassword;
+                                newPassword || recoveryChanged;
 
         // Check AI tools preference
         const aiToolsCheckbox = document.getElementById('ai-tools-enabled');
@@ -1065,6 +1085,10 @@ class SettingsManager {
                 if (newPassword) {
                     updates.password = newPassword;
                 }
+                if (recoveryChanged) {
+                    updates.securityQuestion = securityQuestion;
+                    updates.securityAnswer = securityAnswer;
+                }
                 
                 const result = await this.accountClient.updateProfile(updates);
 
@@ -1076,6 +1100,7 @@ class SettingsManager {
 
                 // Clear password field
                 document.getElementById('settings-new-password').value = '';
+                document.getElementById('settings-security-answer').value = '';
             }
 
             // Save AI tools preference if changed

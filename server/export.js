@@ -8,12 +8,120 @@ const { resolvePathInside } = require('./path-security');
 // Import from core.js
 const {
     IS_LOCAL,
-    USERS_FOLDER,
     validateUserContext,
-    getUserSitesFolder
+    getUserSitesFolder,
+    getUserRoleplaysFolder
 } = require('./core');
 
 const router = express.Router();
+
+function requestError(message, statusCode = 400) {
+    const error = new Error(message);
+    error.statusCode = statusCode;
+    return error;
+}
+
+function parseUserContext(value) {
+    if (typeof value !== 'string') return value;
+    try {
+        return JSON.parse(value);
+    } catch {
+        throw requestError('User context must be valid JSON');
+    }
+}
+
+function normalizeRoleplayUniverse(value) {
+    if (typeof value !== 'string') throw requestError('Universe name must be text');
+    const universe = value.trim();
+    if (!universe || universe === '.' || universe === '..' || universe.length > 128
+        || path.basename(universe) !== universe || /[\u0000-\u001f<>:"/\\|?*]/.test(universe)) {
+        throw requestError('Universe name is not valid');
+    }
+    return universe;
+}
+
+function normalizeRoleplayHtmlFilename(value) {
+    if (typeof value !== 'string') throw requestError('Story filename must be text');
+    const filename = value.trim();
+    if (!filename || filename.length > 255 || path.basename(filename) !== filename
+        || /[\u0000-\u001f<>:"/\\|?*]/.test(filename) || !/\.html?$/i.test(filename)) {
+        throw requestError('Story filename must be a safe HTML filename');
+    }
+    return filename;
+}
+
+function downloadFilename(value, fallback) {
+    const cleaned = String(value || '').replace(/[^a-zA-Z0-9-_]/g, '_').replace(/^_+|_+$/g, '');
+    return cleaned || fallback;
+}
+
+function attachArchiveResponse(res, archive, filename) {
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Cache-Control', 'no-store');
+    archive.on('warning', error => {
+        if (error.code === 'ENOENT') console.warn('Archive entry disappeared during export:', error.message);
+        else archive.emit('error', error);
+    });
+    archive.on('error', error => {
+        console.error('Archive export failed:', error);
+        if (!res.headersSent) res.status(500).json({ error: 'Failed to create archive' });
+        else res.destroy(error);
+    });
+    archive.pipe(res);
+}
+
+function collectLocalImageReferences(source) {
+    const references = new Set();
+    const consider = rawValue => {
+        let value = String(rawValue || '').trim().replace(/^['"]|['"]$/g, '');
+        if (!value || value.startsWith('#') || /^(?:data:|https?:|blob:|\/\/)/i.test(value)) return;
+        value = value.split(/[?#]/, 1)[0].replace(/\\/g, '/').replace(/^\.\//, '');
+        try {
+            value = decodeURIComponent(value);
+        } catch {
+            return;
+        }
+        const normalized = path.posix.normalize(value);
+        if (normalized.startsWith('images/') && normalized !== 'images/' && !normalized.includes('../')) {
+            references.add(normalized);
+        }
+    };
+
+    const attributePattern = /\b(?:src|href|poster)\s*=\s*(["'])(.*?)\1/gi;
+    const srcsetPattern = /\bsrcset\s*=\s*(["'])(.*?)\1/gi;
+    const cssUrlPattern = /url\(\s*(["']?)(.*?)\1\s*\)/gi;
+    let match;
+    while ((match = attributePattern.exec(source))) consider(match[2]);
+    while ((match = srcsetPattern.exec(source))) {
+        match[2].split(',').forEach(candidate => consider(candidate.trim().split(/\s+/, 1)[0]));
+    }
+    while ((match = cssUrlPattern.exec(source))) consider(match[2]);
+    return references;
+}
+
+async function requireSavedRoleplay(userContext, universeValue, filenameValue) {
+    userContext = parseUserContext(userContext);
+    const validation = validateUserContext(userContext);
+    if (!validation.valid) throw requestError(validation.error);
+    const universe = normalizeRoleplayUniverse(universeValue);
+    const roleplaysFolder = getUserRoleplaysFolder(userContext);
+    const universePath = resolvePathInside(roleplaysFolder, universe);
+    if (!await fs.pathExists(universePath) || !(await fs.stat(universePath)).isDirectory()) {
+        throw requestError('Saved universe not found', 404);
+    }
+
+    let filename = null;
+    let htmlPath = null;
+    if (filenameValue !== undefined) {
+        filename = normalizeRoleplayHtmlFilename(filenameValue);
+        htmlPath = resolvePathInside(universePath, filename);
+        if (!await fs.pathExists(htmlPath) || !(await fs.stat(htmlPath)).isFile()) {
+            throw requestError('Saved story not found', 404);
+        }
+    }
+    return { universe, universePath, filename, htmlPath };
+}
 
 // =============================================================================
 // PROJECT EXPORT ROUTES
@@ -26,7 +134,8 @@ router.post('/projects/export', async (req, res) => {
     }
 
     try {
-        const { projectName, userContext } = req.body;
+        const { projectName } = req.body;
+        const userContext = parseUserContext(req.body.userContext);
         
         // Validate user context
         const validation = validateUserContext(userContext);
@@ -72,7 +181,7 @@ router.post('/projects/export', async (req, res) => {
 
         // Create archiver instance
         const archive = archiver('zip', {
-            zlib: { level: 9 } // Best compression
+            zlib: { level: 6 } // Balanced compression keeps larger project downloads responsive.
         });
 
         // Handle archiver errors
@@ -120,9 +229,81 @@ router.post('/projects/export', async (req, res) => {
         
         // Send error response if headers haven't been sent yet
         if (!res.headersSent) {
-            res.status(500).json({ 
+            res.status(error.statusCode || 500).json({
                 error: 'Failed to export project',
                 details: error.message 
+            });
+        }
+    }
+});
+
+// Export one saved RP story with its shared CSS and only the images it references.
+router.post('/roleplay/export-story', async (req, res) => {
+    if (!IS_LOCAL) return res.status(403).json({ error: 'Export not available in hosted environment' });
+
+    try {
+        const saved = await requireSavedRoleplay(
+            req.body.userContext,
+            req.body.universe,
+            req.body.filename
+        );
+        const html = await fs.readFile(saved.htmlPath, 'utf8');
+        const cssPath = resolvePathInside(saved.universePath, 'generated.css');
+        if (!await fs.pathExists(cssPath) || !(await fs.stat(cssPath)).isFile()) {
+            throw requestError('Saved story CSS not found', 404);
+        }
+        const css = await fs.readFile(cssPath, 'utf8');
+        const imageReferences = new Set([
+            ...collectLocalImageReferences(html),
+            ...collectLocalImageReferences(css)
+        ]);
+
+        const archive = archiver('zip', { zlib: { level: 6 } });
+        const storyName = path.parse(saved.filename).name;
+        const zipFilename = `${downloadFilename(storyName, 'Story')}.zip`;
+        attachArchiveResponse(res, archive, zipFilename);
+
+        const archiveRoot = saved.universe;
+        archive.file(saved.htmlPath, { name: path.posix.join(archiveRoot, saved.filename) });
+        archive.file(cssPath, { name: path.posix.join(archiveRoot, 'generated.css') });
+        archive.append('', { name: path.posix.join(archiveRoot, 'images/') });
+
+        for (const reference of imageReferences) {
+            const imagePath = resolvePathInside(saved.universePath, ...reference.split('/'));
+            if (!await fs.pathExists(imagePath)) continue;
+            const stat = await fs.lstat(imagePath);
+            if (stat.isFile() && !stat.isSymbolicLink()) {
+                archive.file(imagePath, { name: path.posix.join(archiveRoot, reference) });
+            }
+        }
+
+        await archive.finalize();
+    } catch (error) {
+        console.error('Story export failed:', error);
+        if (!res.headersSent) {
+            res.status(error.statusCode || 500).json({
+                error: error.statusCode ? error.message : 'Failed to export story'
+            });
+        }
+    }
+});
+
+// Export the saved universe exactly as it appears in the user's roleplays folder.
+router.post('/roleplay/export-universe', async (req, res) => {
+    if (!IS_LOCAL) return res.status(403).json({ error: 'Export not available in hosted environment' });
+
+    try {
+        const saved = await requireSavedRoleplay(req.body.userContext, req.body.universe);
+        const archive = archiver('zip', { zlib: { level: 6 } });
+        const zipFilename = `${downloadFilename(saved.universe, 'Universe')}.zip`;
+        attachArchiveResponse(res, archive, zipFilename);
+        archive.directory(saved.universePath, saved.universe);
+        await archive.finalize();
+    } catch (error) {
+        console.error('Universe export failed:', error);
+        if (!res.headersSent) {
+            res.status(error.statusCode || 500).json({
+                error: error.statusCode ? error.message : 'Failed to export universe'
             });
         }
     }
@@ -135,7 +316,8 @@ router.post('/projects/export-info', async (req, res) => {
     }
 
     try {
-        const { projectName, userContext } = req.body;
+        const { projectName } = req.body;
+        const userContext = parseUserContext(req.body.userContext);
         
         const validation = validateUserContext(userContext);
         if (!validation.valid) {

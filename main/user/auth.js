@@ -25,6 +25,11 @@ class AuthManager {
             ? new window.LegacyAuthMigrationAdapter({ apiBase: this.apiBase })
             : null;
         this.eventListenersAttached = false; // Prevent duplicate listeners
+        this.adminSessionToken = null;
+        this.adminSessionIsPrimary = false;
+        this.adminManagerReturnToSettings = false;
+        this.recoveryMethod = null;
+        this.recoveryIdentifier = null;
         this.authState = 'starting';
         this.lastAuthIdentity = null;
         this.sessionPolicy = Object.freeze({
@@ -597,6 +602,36 @@ class AuthManager {
             });
         }
 
+        document.getElementById('forgot-password-link')?.addEventListener('click', () => {
+            document.getElementById('recovery-identifier').value = document.getElementById('login-username').value.trim();
+            this.showAuthPanel('password-recovery-panel');
+        });
+        document.getElementById('manage-accounts-link')?.addEventListener('click', () => {
+            document.getElementById('admin-username').value = document.getElementById('login-username').value.trim();
+            this.showAuthPanel('account-manager-panel');
+        });
+        document.querySelectorAll('[data-auth-back]').forEach(button => {
+            button.addEventListener('click', () => {
+                if (button.id === 'admin-manager-back' && this.adminManagerReturnToSettings) {
+                    this.closeAccountManagerToSettings();
+                    return;
+                }
+                this.showPrimaryAuth();
+            });
+        });
+        document.getElementById('recovery-start-form')?.addEventListener('submit', event => {
+            event.preventDefault();
+            this.handleRecoveryStart();
+        });
+        document.getElementById('recovery-reset-form')?.addEventListener('submit', event => {
+            event.preventDefault();
+            this.handleRecoveryReset();
+        });
+        document.getElementById('admin-unlock-form')?.addEventListener('submit', event => {
+            event.preventDefault();
+            this.handleAdminUnlock();
+        });
+
         // Mark listeners as attached
         this.eventListenersAttached = true;
         console.log('✅ All auth event listeners attached successfully');
@@ -605,9 +640,258 @@ class AuthManager {
         window.authManager = this;
     }
 
+    showAuthPanel(panelId) {
+        document.getElementById('auth-primary-view').hidden = true;
+        document.querySelectorAll('.auth-aux-panel').forEach(panel => { panel.hidden = panel.id !== panelId; });
+        document.getElementById(panelId)?.querySelector('input')?.focus();
+    }
+
+    showPrimaryAuth() {
+        document.getElementById('auth-primary-view').hidden = false;
+        document.querySelectorAll('.auth-aux-panel').forEach(panel => { panel.hidden = true; });
+        if (this.adminSessionToken && !this.adminSessionIsPrimary) {
+            fetch(`${this.apiBase}/api/auth/toolkit-session/logout`, {
+                method: 'POST',
+                headers: { 'X-Toolkit-Session': this.adminSessionToken }
+            }).catch(() => {});
+        }
+        this.adminSessionToken = null;
+        this.adminSessionIsPrimary = false;
+        this.adminManagerReturnToSettings = false;
+        const adminBackLabel = document.getElementById('admin-manager-back-label');
+        if (adminBackLabel) adminBackLabel.textContent = 'Back to sign in';
+        document.getElementById('admin-unlock-form')?.reset();
+        const adminView = document.getElementById('admin-account-view');
+        const adminForm = document.getElementById('admin-unlock-form');
+        if (adminView) adminView.hidden = true;
+        if (adminForm) adminForm.hidden = false;
+        const recoveryStart = document.getElementById('recovery-start-form');
+        const recoveryReset = document.getElementById('recovery-reset-form');
+        if (recoveryStart) recoveryStart.hidden = false;
+        if (recoveryReset) recoveryReset.hidden = true;
+        document.getElementById('recovery-start-form')?.reset();
+        document.getElementById('recovery-reset-form')?.reset();
+        this.setAuthPanelStatus('recovery-status', '');
+        this.setAuthPanelStatus('admin-status', '');
+    }
+
+    async openAccountManagerForCurrentAdmin() {
+        if (!this.currentUser?.isAdmin) {
+            this.showToast('Administrator access required', 'error');
+            return;
+        }
+
+        const token = this.getToolkitSessionToken();
+        if (!token) {
+            this.handleSessionExpired();
+            return;
+        }
+
+        this.adminSessionToken = token;
+        this.adminSessionIsPrimary = true;
+        this.adminManagerReturnToSettings = true;
+        const adminBackLabel = document.getElementById('admin-manager-back-label');
+        if (adminBackLabel) adminBackLabel.textContent = 'Back to Settings';
+        document.getElementById('admin-unlock-form').hidden = true;
+        document.getElementById('admin-account-view').hidden = false;
+        this.showAuthPanel('account-manager-panel');
+
+        const authModal = document.getElementById('auth-modal');
+        authModal.style.display = 'flex';
+        authModal.classList.add('show');
+        this.setAuthPanelStatus('admin-status', '');
+        try {
+            await this.loadManagedAccounts();
+        } catch (error) {
+            this.setAuthPanelStatus('admin-status', error.message, 'error');
+        }
+    }
+
+    closeAccountManagerToSettings() {
+        const authModal = document.getElementById('auth-modal');
+        authModal.classList.remove('show');
+        authModal.style.display = 'none';
+        this.adminSessionToken = null;
+        this.adminSessionIsPrimary = false;
+        this.adminManagerReturnToSettings = false;
+        document.getElementById('auth-primary-view').hidden = false;
+        document.querySelectorAll('.auth-aux-panel').forEach(panel => { panel.hidden = true; });
+        const adminBackLabel = document.getElementById('admin-manager-back-label');
+        if (adminBackLabel) adminBackLabel.textContent = 'Back to sign in';
+        window.settingsManager?.openSettings();
+    }
+
+    setAuthPanelStatus(id, message, type = '') {
+        const status = document.getElementById(id);
+        if (!status) return;
+        status.textContent = message;
+        status.className = `auth-status ${type}`.trim();
+    }
+
+    async loadAdminAvailability() {
+        try {
+            const response = await fetch(`${this.apiBase}/api/auth/admin/status`);
+            const result = await response.json();
+            document.getElementById('manage-accounts-link').hidden = !result.available;
+        } catch (error) {
+            console.warn('Could not check account-manager availability:', error);
+        }
+    }
+
+    async handleRecoveryStart() {
+        const panel = document.getElementById('password-recovery-panel');
+        const identifier = document.getElementById('recovery-identifier').value.trim();
+        this.setAuthPanelStatus('recovery-status', '');
+        panel.classList.add('loading');
+        try {
+            const response = await fetch(`${this.apiBase}/api/auth/recovery/start`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ identifier })
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || 'Recovery could not be started');
+            this.recoveryMethod = result.method;
+            this.recoveryIdentifier = identifier;
+            document.getElementById('recovery-start-form').hidden = true;
+            document.getElementById('recovery-reset-form').hidden = false;
+            const credential = document.getElementById('recovery-credential');
+            const label = document.getElementById('recovery-credential-label');
+            const challenge = document.getElementById('recovery-challenge');
+            if (result.method === 'email') {
+                label.textContent = 'Six-digit reset code';
+                credential.inputMode = 'numeric';
+                challenge.textContent = `A reset code was sent to ${result.destination}.`;
+            } else {
+                label.textContent = 'Security answer';
+                credential.inputMode = 'text';
+                challenge.textContent = result.question;
+            }
+            credential.focus();
+        } catch (error) {
+            this.setAuthPanelStatus('recovery-status', error.message, 'error');
+        } finally {
+            panel.classList.remove('loading');
+        }
+    }
+
+    async handleRecoveryReset() {
+        const panel = document.getElementById('password-recovery-panel');
+        const newPassword = document.getElementById('recovery-password').value;
+        if (newPassword !== document.getElementById('recovery-confirm').value) {
+            this.setAuthPanelStatus('recovery-status', 'The new passwords do not match.', 'error');
+            return;
+        }
+        panel.classList.add('loading');
+        try {
+            const response = await fetch(`${this.apiBase}/api/auth/recovery/reset`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    identifier: this.recoveryIdentifier,
+                    method: this.recoveryMethod,
+                    credential: document.getElementById('recovery-credential').value,
+                    newPassword
+                })
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || 'Password could not be reset');
+            document.getElementById('login-username').value = this.recoveryIdentifier;
+            document.getElementById('login-password').value = '';
+            this.showPrimaryAuth();
+            this.switchTab('login');
+            this.showToast('Password reset. You can sign in now.', 'success');
+        } catch (error) {
+            this.setAuthPanelStatus('recovery-status', error.message, 'error');
+        } finally {
+            panel.classList.remove('loading');
+        }
+    }
+
+    async handleAdminUnlock() {
+        const panel = document.getElementById('account-manager-panel');
+        panel.classList.add('loading');
+        this.setAuthPanelStatus('admin-status', '');
+        try {
+            const response = await fetch(`${this.apiBase}/api/auth/admin/session`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    usernameOrEmail: document.getElementById('admin-username').value.trim(),
+                    password: document.getElementById('admin-password').value
+                })
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || 'Administrator access was denied');
+            this.adminSessionToken = result.adminSessionToken;
+            this.adminSessionIsPrimary = false;
+            this.adminManagerReturnToSettings = false;
+            document.getElementById('admin-unlock-form').hidden = true;
+            document.getElementById('admin-account-view').hidden = false;
+            await this.loadManagedAccounts();
+        } catch (error) {
+            this.setAuthPanelStatus('admin-status', error.message, 'error');
+        } finally {
+            panel.classList.remove('loading');
+        }
+    }
+
+    async loadManagedAccounts() {
+        const response = await fetch(`${this.apiBase}/api/auth/admin/accounts`, {
+            headers: { 'X-Toolkit-Session': this.adminSessionToken }
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Could not load accounts');
+        const rows = result.accounts.map(account => {
+            const row = document.createElement('div');
+            row.className = 'admin-account-row';
+            const details = document.createElement('div');
+            const name = document.createElement('div');
+            name.className = 'admin-account-name';
+            name.textContent = account.username;
+            if (account.isAdmin) {
+                const badge = document.createElement('span');
+                badge.className = 'admin-badge';
+                badge.textContent = 'Admin';
+                name.appendChild(badge);
+            }
+            const meta = document.createElement('span');
+            meta.className = 'admin-account-meta';
+            meta.textContent = account.email || 'No email';
+            details.append(name, meta);
+            const remove = document.createElement('button');
+            remove.type = 'button';
+            remove.className = 'admin-delete-btn';
+            remove.textContent = 'Delete';
+            remove.addEventListener('click', () => this.deleteManagedAccount(account));
+            row.append(details, remove);
+            return row;
+        });
+        document.getElementById('admin-account-list').replaceChildren(...rows);
+    }
+
+    async deleteManagedAccount(account) {
+        if (!window.confirm(`Delete ${account.username} and move all of their files to recoverable staging?`)) return;
+        this.setAuthPanelStatus('admin-status', `Deleting ${account.username}…`);
+        try {
+            const response = await fetch(`${this.apiBase}/api/auth/admin/accounts/${encodeURIComponent(account.id)}`, {
+                method: 'DELETE',
+                headers: { 'X-Toolkit-Session': this.adminSessionToken }
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || 'Could not delete account');
+            this.setAuthPanelStatus('admin-status', `${account.username} was deleted.`, 'success');
+            await this.loadManagedAccounts();
+            await this.loadUserSelectionGrid();
+        } catch (error) {
+            this.setAuthPanelStatus('admin-status', error.message, 'error');
+        }
+    }
+
     // Load and display user selection grid
     async loadUserSelectionGrid() {
         try {
+            this.loadAdminAvailability();
             const response = await fetch(`${this.apiBase}/api/auth/users`);
             if (!response.ok) return;
             
@@ -786,8 +1070,10 @@ class AuthManager {
         console.log(`📋 Updating ${allTabs.length} tab buttons`);
         allTabs.forEach(tab => {
             tab.classList.remove('active');
+            tab.setAttribute('aria-selected', 'false');
         });
         targetTab.classList.add('active');
+        targetTab.setAttribute('aria-selected', 'true');
 
         // Update form visibility
         const allForms = document.querySelectorAll('.auth-form');
@@ -896,6 +1182,8 @@ class AuthManager {
         const email = document.getElementById('register-email').value.trim();
         const password = document.getElementById('register-password').value;
         const confirmPassword = document.getElementById('register-confirm').value;
+        const securityQuestion = document.getElementById('register-security-question').value.trim();
+        const securityAnswer = document.getElementById('register-security-answer').value.trim();
 
         // Clear previous errors
         this.clearFormErrors();
@@ -935,6 +1223,11 @@ class AuthManager {
             return;
         }
 
+        if (Boolean(securityQuestion) !== Boolean(securityAnswer)) {
+            this.showFormError(securityQuestion ? 'register-security-answer' : 'register-security-question', 'Enter both a security question and answer');
+            return;
+        }
+
         // Add loading state
         form.classList.add('loading');
         this.setAuthState('switching', { reason: 'registration-requested' });
@@ -943,7 +1236,7 @@ class AuthManager {
             const response = await fetch(`${this.apiBase}/api/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, email, password })
+                body: JSON.stringify({ username, email, password, securityQuestion, securityAnswer })
             });
 
             const result = await response.json();
@@ -1079,6 +1372,7 @@ class AuthManager {
     // FIXED: Show auth modal with proper timing
     showAuthModal() {
         this.hideLoadingState();
+        this.showPrimaryAuth();
         
         const authModal = document.getElementById('auth-modal');
         const mainContent = document.getElementById('main-content');
@@ -1229,9 +1523,6 @@ class AuthManager {
         this.clearAllSessions(); // Clear both user session and server session
         this.setAuthState('signed-out', { reason: options.reason || 'logout' });
         
-        // Reset event listeners flag so they can be reattached
-        this.eventListenersAttached = false;
-        
         this.showAuthModal();
         this.showToast('Logged out successfully', 'info');
         
@@ -1379,18 +1670,13 @@ class AuthManager {
             const response = await fetch(`${this.apiBase}/api/version`);
             if (response.ok) {
                 const versionData = await response.json();
-                const versionElement = document.getElementById('version-number');
-                if (versionElement) {
+                document.querySelectorAll('[data-toolkit-version]').forEach(versionElement => {
                     versionElement.textContent = `${versionData.version}`;
-                }
+                    versionElement.removeAttribute('title');
+                });
             }
         } catch (error) {
             console.warn('Could not load version info:', error);
-            // Fallback to hardcoded version
-            const versionElement = document.getElementById('version-number');
-            if (versionElement) {
-                versionElement.textContent = '4.0.1';
-            }
         }
     }
 }

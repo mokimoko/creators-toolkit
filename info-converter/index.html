@@ -1085,7 +1085,23 @@ Color picker syncs with text input.</div>
                     <button id="generate-btn" class="btn-main-action"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>Create</span></button>
                     <button id="save-to-sites-btn" class="btn-secondary is-hidden"><i class="fas fa-floppy-disk" aria-hidden="true"></i> Save Project</button>
                     <button id="open-project-btn" class="btn-secondary is-hidden"><i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i> Open Current Project</button>
-                    <button id="download-btn" class="btn-secondary" title="Create or update the project before downloading" disabled><i class="fas fa-download" aria-hidden="true"></i> Download Raw HTML</button>
+                    <div class="download-menu" id="lore-download-menu">
+                        <button id="download-btn" class="btn-secondary download-menu-trigger" type="button" data-download-trigger aria-haspopup="menu" aria-expanded="false" aria-controls="lore-download-options" title="Choose what to download" disabled>
+                            <i class="fas fa-download" aria-hidden="true"></i>
+                            <span>Download</span>
+                            <i class="fas fa-chevron-down download-menu-chevron" aria-hidden="true"></i>
+                        </button>
+                        <div class="download-menu-popover" id="lore-download-options" data-download-options role="menu" aria-label="Lore Codex download options" hidden>
+                            <button class="download-menu-item" type="button" role="menuitem" data-download-action="html" disabled aria-disabled="true">
+                                <i class="fas fa-file-code" aria-hidden="true"></i>
+                                <span><strong>HTML File Only</strong><small data-download-description>Generate the project first</small></span>
+                            </button>
+                            <button class="download-menu-item" type="button" role="menuitem" data-download-action="project" disabled aria-disabled="true">
+                                <i class="fas fa-folder-tree" aria-hidden="true"></i>
+                                <span><strong>Entire Project</strong><small data-download-description>Save or load a project first</small></span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="github-sync-panel" class="github-sync-panel is-hidden">
@@ -3896,6 +3912,7 @@ assets/characters/charactername/action.jpg"></textarea>
     <!-- Include JavaScript files -->
     <script src="../utils/file-picker.js"></script>
     <script src="../utils/sandboxed-preview-assets.js"></script>
+    <script src="../utils/download-menu.js"></script>
     <script src="modules/logger.js"></script>
     <script src="modules/compat-state.js"></script>
     <script src="user/user-session.js"></script>

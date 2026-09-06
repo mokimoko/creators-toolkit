@@ -58,3 +58,15 @@ test('shell compatibility surface is deliberate and auth changes are event based
     assert.doesNotMatch(auth, /updateUserDisplay\s*=/);
     assert.match(auth, /new CustomEvent\('auth:changed'/);
 });
+
+test('shell version labels share the server-provided package version', () => {
+    const html = read('main/index.html');
+    const css = read('main/main.css');
+    const auth = read('main/user/auth.js');
+
+    assert.equal((html.match(/data-toolkit-version/g) || []).length, 2);
+    assert.match(html, /class="toolkit-corner-version"/);
+    assert.match(css, /\.toolkit-corner-version\s*\{[\s\S]*position:\s*fixed;[\s\S]*bottom:/);
+    assert.match(auth, /querySelectorAll\('\[data-toolkit-version\]'\)/);
+    assert.doesNotMatch(auth, /versionElement\.textContent\s*=\s*['"]\d+\.\d+\.\d+/);
+});

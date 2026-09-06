@@ -262,17 +262,9 @@ function generateHTML() {
 // Function to update save button state
 function updateSaveButtonState() {
     const saveToSitesBtn = document.getElementById('save-to-sites-btn');
-    const downloadBtn = document.getElementById('download-btn');
     const shouldEnable = window.htmlGenerated && !window.dataModified;
 
-    if (downloadBtn) {
-        downloadBtn.disabled = !shouldEnable;
-        downloadBtn.title = shouldEnable
-            ? 'Download the current raw HTML file'
-            : (window.dataModified
-                ? 'Update the project before downloading'
-                : 'Create the project before downloading');
-    }
+    window.updateDownloadMenuState?.();
 
     if (saveToSitesBtn && isLocal) {
         saveToSitesBtn.disabled = !shouldEnable;

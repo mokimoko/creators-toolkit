@@ -42,7 +42,6 @@ export function createDomainButtonController(actions) {
         }
 
         const bindings = {
-            'download-btn': actions.downloadHTML,
             'save-to-sites-btn': actions.saveToSitesFolder,
             'export-editable-btn': actions.downloadEditableArchive,
             'github-sync-select': actions.selectGitHubRepository,
@@ -99,6 +98,7 @@ export function createDomainButtonController(actions) {
         bindClick('add-subarc-event-btn', actions.addEventToSubArc);
         bindClick('add-event-btn', () => actions.addEventToPlan('main'));
 
+        actions.initializeDownloadMenu?.();
         if (document.getElementById('save-to-sites-btn')) actions.updateSaveButtonState();
     }
 

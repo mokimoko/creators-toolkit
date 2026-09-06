@@ -243,7 +243,7 @@
             }
 
             saveExport.markGenerated(html);
-            showStatusMessage('Preview generated. Save Roleplay and Download Raw HTML are ready.', 'success');
+            showStatusMessage('Preview generated. Save Roleplay and Download are ready.', 'success');
             root.RPArchiver.get('notifications').show('success', 'Preview generated successfully');
             return html;
         } catch (error) {

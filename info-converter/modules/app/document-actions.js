@@ -69,6 +69,8 @@ function createResetInfoData() {
 }
 
 export function createDocumentActions(dependencies) {
+    let downloadMenuController = null;
+
     function downloadTextFile(content, filename, mimeType) {
         const blob = new Blob([content], { type: mimeType });
         const url = URL.createObjectURL(blob);
@@ -98,6 +100,53 @@ export function createDocumentActions(dependencies) {
         filename = filename.replace(/[^a-zA-Z0-9-_.]/g, '');
 
         downloadTextFile(html, filename, 'text/html;charset=utf-8');
+    }
+
+    function downloadProject() {
+        const { isLocal, currentProject, userSessionManager } = dependencies.getContext();
+        if (!isLocal || !currentProject || !userSessionManager || !window.ToolkitDownloadMenu) {
+            dependencies.showStatus('error', 'Save or load a Lore Codex project before downloading it');
+            return false;
+        }
+
+        window.ToolkitDownloadMenu.submitPostDownload('/api/projects/export', {
+            projectName: currentProject,
+            userContext: userSessionManager.getUserContext()
+        });
+        dependencies.showToast('success', `Entire project download started: ${currentProject}`, 5000);
+        return true;
+    }
+
+    function updateDownloadMenuState() {
+        if (!downloadMenuController) return;
+        const context = dependencies.getContext();
+        const htmlReady = Boolean(
+            document.getElementById('html-output')?.value
+            && window.htmlGenerated
+            && !window.dataModified
+        );
+        const projectReady = Boolean(context.isLocal && context.currentProject && context.userSessionManager);
+
+        downloadMenuController.setItemState('html', {
+            disabled: !htmlReady,
+            description: htmlReady ? 'Current generated .html file' : 'Create or update the project first'
+        });
+        downloadMenuController.setItemState('project', {
+            disabled: !projectReady,
+            description: projectReady ? 'Complete saved project folder as a ZIP' : 'Save or load a project first'
+        });
+    }
+
+    function initializeDownloadMenu() {
+        if (!window.ToolkitDownloadMenu) return;
+        downloadMenuController = window.ToolkitDownloadMenu.initialize('#lore-download-menu', {
+            onOpen: updateDownloadMenuState,
+            onSelect(action) {
+                if (action === 'html') downloadHTML();
+                if (action === 'project') downloadProject();
+            }
+        });
+        updateDownloadMenuState();
     }
 
     function downloadEditableArchive() {
@@ -204,7 +253,10 @@ export function createDocumentActions(dependencies) {
     return {
         downloadEditableArchive,
         downloadHTML,
+        downloadProject,
         importHTML,
+        initializeDownloadMenu,
+        updateDownloadMenuState,
         resetForm
     };
 }

@@ -11,6 +11,7 @@
     let loreLookupTimer = null;
     let loreLookupRequest = 0;
     let loreUpdateInProgress = false;
+    let downloadMenuController = null;
 
     function element(id) {
         return document.getElementById(id);
@@ -42,6 +43,7 @@
         button.title = isLoadedProject
             ? 'Update the loaded roleplay preview'
             : 'Create a new roleplay preview';
+        updateDownloadMenuState();
     }
 
     function updateLoreButtonLabel(button, updated) {
@@ -56,10 +58,11 @@
     }
 
     function setActionState() {
-        ['save-project-btn', 'export-html-btn', 'copy-btn'].forEach(id => {
+        ['save-project-btn', 'copy-btn'].forEach(id => {
             const button = element(id);
             if (button) button.disabled = generationInProgress || !generatedDocumentReady;
         });
+        updateDownloadMenuState();
 
         const openButton = element('open-saved-roleplay-btn');
         if (openButton) {
@@ -148,6 +151,66 @@
             universe: element('universe')?.value.trim() || 'Universe',
             cssTemplate: element('css-template')?.value || 'generated.css'
         };
+    }
+
+    function getStoredProject() {
+        const project = root.RPArchiver.get('state').get().importedProject;
+        if (!project?.universe || !project?.filename) return null;
+        return { universe: project.universe, filename: project.filename };
+    }
+
+    function updateDownloadMenuState() {
+        if (!downloadMenuController) return;
+        const htmlReady = generatedDocumentReady && !generationInProgress;
+        const storyReady = Boolean(getStoredProject()) && !generationInProgress;
+        const universeReady = Boolean(getStoredProject()) && !generationInProgress;
+
+        downloadMenuController.setItemState('html', {
+            disabled: !htmlReady,
+            description: htmlReady ? 'Current generated .html file' : 'Create or update the roleplay first'
+        });
+        downloadMenuController.setItemState('story', {
+            disabled: !storyReady,
+            description: storyReady ? 'Saved HTML, CSS, and only its images' : 'Save or load this roleplay first'
+        });
+        downloadMenuController.setItemState('universe', {
+            disabled: !universeReady,
+            description: universeReady ? 'Complete saved universe folder as a ZIP' : 'Save or load a roleplay first'
+        });
+    }
+
+    function downloadSavedArchive(kind) {
+        const project = getStoredProject();
+        if (!project || !root.userSessionManager?.getUserContext || !root.ToolkitDownloadMenu) {
+            showStatus(`Save or load ${kind === 'story' ? 'this roleplay' : 'a roleplay'} before downloading.`, 'error');
+            return false;
+        }
+
+        const endpoint = kind === 'story'
+            ? '/api/roleplay/export-story'
+            : '/api/roleplay/export-universe';
+        const fields = {
+            universe: project.universe,
+            userContext: root.userSessionManager.getUserContext()
+        };
+        if (kind === 'story') fields.filename = project.filename;
+        root.ToolkitDownloadMenu.submitPostDownload(endpoint, fields);
+        const label = kind === 'story' ? project.filename : project.universe;
+        showStatus(`${kind === 'story' ? 'Current story' : 'Entire universe'} download started: ${label}`, 'success', 7000);
+        root.RPArchiver.get('notifications').show('success', 'ZIP download started');
+        return true;
+    }
+
+    function initializeDownloadMenu() {
+        if (!root.ToolkitDownloadMenu) return;
+        downloadMenuController = root.ToolkitDownloadMenu.initialize('#roleplay-download-menu', {
+            onOpen: updateDownloadMenuState,
+            onSelect(action) {
+                if (action === 'html') exportHTML();
+                if (action === 'story' || action === 'universe') downloadSavedArchive(action);
+            }
+        });
+        updateDownloadMenuState();
     }
 
     function createSaveFormData(details) {
@@ -391,9 +454,11 @@
 
     root.RPArchiver.define('saveExport', {
         downloadFallback,
+        downloadSavedArchive,
         exportHTML,
         getGeneratedDocument,
         invalidate,
+        initializeDownloadMenu,
         markGenerated,
         openSavedRoleplay,
         refreshLoreLinks,
@@ -401,6 +466,7 @@
         setGenerationInProgress,
         saveProject,
         updateCreateButtonLabel,
+        updateDownloadMenuState,
         updateLoreCopies
     });
 })(window);
