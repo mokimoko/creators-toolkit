@@ -84,8 +84,10 @@ export function createDocumentActions(dependencies) {
 
     function downloadHTML() {
         const html = document.getElementById('html-output').value;
-        if (!html) {
-            dependencies.showStatus('error', 'Please generate HTML first');
+        if (!html || !window.htmlGenerated || window.dataModified) {
+            dependencies.showStatus('error', window.dataModified
+                ? 'Update the project before downloading its raw HTML'
+                : 'Create the project before downloading its raw HTML');
             return;
         }
 

@@ -262,27 +262,25 @@ function generateHTML() {
 // Function to update save button state
 function updateSaveButtonState() {
     const saveToSitesBtn = document.getElementById('save-to-sites-btn');
-    if (!saveToSitesBtn || !isLocal) {
-        window.updateGitHubSyncUI?.();
-        return;
-    }
-    
+    const downloadBtn = document.getElementById('download-btn');
     const shouldEnable = window.htmlGenerated && !window.dataModified;
-    
-    saveToSitesBtn.disabled = !shouldEnable;
-    
-    // Update button appearance and tooltip
-    if (shouldEnable) {
-        saveToSitesBtn.title = 'Save Project';
-        saveToSitesBtn.textContent = 'Save Project';
-    } else {
-        if (!window.htmlGenerated) {
-            saveToSitesBtn.title = 'Create the public site before saving';
-            saveToSitesBtn.textContent = 'Create Public Site First';
-        } else if (window.dataModified) {
-            saveToSitesBtn.title = 'Recreate the public site because project data changed';
-            saveToSitesBtn.textContent = 'Recreate Public Site First';
-        }
+
+    if (downloadBtn) {
+        downloadBtn.disabled = !shouldEnable;
+        downloadBtn.title = shouldEnable
+            ? 'Download the current raw HTML file'
+            : (window.dataModified
+                ? 'Update the project before downloading'
+                : 'Create the project before downloading');
+    }
+
+    if (saveToSitesBtn && isLocal) {
+        saveToSitesBtn.disabled = !shouldEnable;
+        saveToSitesBtn.title = shouldEnable
+            ? 'Save Project'
+            : (window.dataModified
+                ? 'Update the project before saving'
+                : 'Create the project before saving');
     }
 
     window.updateGitHubSyncUI?.();
@@ -2437,7 +2435,15 @@ window.updatePreview = function(html) {
 
     iframe.title = 'Public Lore Codex preview';
     iframe.setAttribute('sandbox', 'allow-scripts allow-downloads');
-    iframe.srcdoc = previewHtml;
+    if (window.ToolkitSandboxedPreviewAssets && previewBaseHref) {
+        void window.ToolkitSandboxedPreviewAssets.render(iframe, {
+            html: previewHtml,
+            baseHref: previewBaseHref,
+            assetPrefixes: ['assets/']
+        });
+    } else {
+        iframe.srcdoc = previewHtml;
+    }
     
     // Add 'has-content' class to hide the empty state placeholder
     if (previewContainer && html && html.trim()) {

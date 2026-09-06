@@ -131,6 +131,12 @@ let hasFileAccess = false;
 let sitesFolder = null;
 let currentProject = null;
 
+function setCurrentProjectContext(projectName) {
+    currentProject = projectName || null;
+    window.currentProject = currentProject;
+    globalThis.updateGenerateButtonState?.();
+}
+
 // Current editing state - make globally accessible
 // Current editing state - make globally accessible
 window.editingIndex = -1;
@@ -318,10 +324,7 @@ document.addEventListener('keydown', handleSidebarKeyboard);
 
 savePublishController = createSavePublishController({
     getContext: () => ({ isLocal, currentProject, infoData, userSessionManager }),
-    setCurrentProject: projectName => {
-        currentProject = projectName;
-        window.currentProject = projectName;
-    },
+    setCurrentProject: setCurrentProjectContext,
     saveBuiltIcons,
     collectFormData: () => globalThis.collectFormData(),
     generateHTML: () => globalThis.generateHTML(),
@@ -350,10 +353,7 @@ savePublishController = createSavePublishController({
     updateQuickOpenState
 } = createProjectActions({
     getContext: () => ({ isLocal, currentProject, userSessionManager }),
-    setCurrentProject: projectName => {
-        currentProject = projectName;
-        window.currentProject = projectName;
-    },
+    setCurrentProject: setCurrentProjectContext,
     generateHTML: () => window.generateHTML(),
     loadNavProject: (...args) => loadNavProject(...args),
     loadProjects: (...args) => loadProjects(...args),
@@ -373,10 +373,7 @@ savePublishController = createSavePublishController({
     restoreLinkedLorebook
 } = createProjectController({
     getContext: () => ({ isLocal, currentProject, infoData, userSessionManager }),
-    setCurrentProject: projectName => {
-        currentProject = projectName;
-        window.currentProject = projectName;
-    },
+    setCurrentProject: setCurrentProjectContext,
     setProjectLoading: loading => {
         projectLoading = loading;
         window.projectLoading = loading;
@@ -412,10 +409,7 @@ savePublishController = createSavePublishController({
     resetForm
 } = createDocumentActions({
     checkAssetsFolder: (...args) => checkAssetsFolder(...args),
-    clearCurrentProject: () => {
-        currentProject = null;
-        window.currentProject = null;
-    },
+    clearCurrentProject: () => setCurrentProjectContext(null),
     collectFormData: () => globalThis.collectFormData(),
     generateHTML: () => globalThis.generateHTML(),
     notifyUser: message => window.notifyLoreUser(message),

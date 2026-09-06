@@ -33,7 +33,10 @@ export function createDomainButtonController(actions) {
         const generateButton = document.getElementById('generate-btn');
         if (generateButton && actions.generateHTML) {
             generateButton.addEventListener('click', () => runWithButtonProgress(generateButton, actions.generateHTML, {
-                lockedButtons: [document.getElementById('save-to-sites-btn')],
+                lockedButtons: [
+                    document.getElementById('save-to-sites-btn'),
+                    document.getElementById('download-btn')
+                ],
                 onSettled: actions.updateSaveButtonState
             }));
         }

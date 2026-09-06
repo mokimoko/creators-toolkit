@@ -1082,9 +1082,10 @@ Color picker syncs with text input.</div>
                 </div>
 
                 <div class="generate-controls" aria-label="Public site actions">
-                    <button id="generate-btn" class="btn-main-action"><i class="fas fa-eye" aria-hidden="true"></i> Preview Public Site</button>
+                    <button id="generate-btn" class="btn-main-action"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>Create</span></button>
                     <button id="save-to-sites-btn" class="btn-secondary is-hidden"><i class="fas fa-floppy-disk" aria-hidden="true"></i> Save Project</button>
-                    <button id="download-btn" class="btn-secondary"><i class="fas fa-download" aria-hidden="true"></i> Download Public HTML</button>
+                    <button id="open-project-btn" class="btn-secondary is-hidden"><i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i> Open Current Project</button>
+                    <button id="download-btn" class="btn-secondary" title="Create or update the project before downloading" disabled><i class="fas fa-download" aria-hidden="true"></i> Download Raw HTML</button>
                 </div>
 
                 <div id="github-sync-panel" class="github-sync-panel is-hidden">
@@ -1121,7 +1122,6 @@ Color picker syncs with text input.</div>
                         </div>
                         <div class="advanced-export-actions">
                             <button id="export-editable-btn" class="btn-secondary" type="button">Export Editable Archive</button>
-                            <button id="open-project-btn" class="btn-secondary is-hidden">Open Current Project</button>
                         </div>
                     </div>
                     <label class="code-output-label" for="html-output">Generated public HTML</label>
@@ -3895,6 +3895,7 @@ assets/characters/charactername/action.jpg"></textarea>
 
     <!-- Include JavaScript files -->
     <script src="../utils/file-picker.js"></script>
+    <script src="../utils/sandboxed-preview-assets.js"></script>
     <script src="modules/logger.js"></script>
     <script src="modules/compat-state.js"></script>
     <script src="user/user-session.js"></script>

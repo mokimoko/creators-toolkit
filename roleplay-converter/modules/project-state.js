@@ -17,9 +17,19 @@
         state.generatedHTML = '';
     }
 
+    function clearImportedProject() {
+        state.importedProject = null;
+    }
+
+    function setImportedProject(project) {
+        state.importedProject = project && typeof project === 'object' ? { ...project } : null;
+    }
+
     root.RPArchiver.define('state', {
         clearGeneratedHTML,
+        clearImportedProject,
         get: () => state,
-        replaceParsedContent
+        replaceParsedContent,
+        setImportedProject
     });
 })(window);

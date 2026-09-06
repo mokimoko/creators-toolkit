@@ -2358,6 +2358,10 @@ router.post('/roleplay/save', (req, res) => {
                 .filter(asset => asset.status === 'replaced').length;
             
             const userDisplay = userContext.isGuest ? 'guest' : userContext.username;
+            const userPath = userContext.isGuest ? 'guest' : userContext.userId;
+            const viewUrl = [userPath, cleanUniverse, htmlFilename]
+                .map(segment => encodeURIComponent(segment))
+                .join('/');
             const totalImages = (backgroundFile ? 1 : 0) + (bannerFile ? 1 : 0) + storyImages.length;
             
             console.log(`🎭 Save completed for ${userDisplay}:`);
@@ -2375,6 +2379,7 @@ router.post('/roleplay/save', (req, res) => {
                 title: cleanTitle,
                 universe: cleanUniverse,
                 filename: htmlFilename,
+                viewUrl: `/roleplays/${viewUrl}`,
                 filepath: htmlFilePath,
                 cssTemplate: selectedTemplate,
                 cssIncluded: true,

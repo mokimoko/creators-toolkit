@@ -1,4 +1,4 @@
-# Creator's Toolkit v4.0.0
+# Creator's Toolkit v4.0.1
 
 A comprehensive writing suite for writers, roleplayers, and creatives of all types. 
 

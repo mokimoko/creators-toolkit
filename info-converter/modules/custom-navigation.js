@@ -297,13 +297,20 @@ function updateAddButtonState() {
 function updateGenerateButtonState() {
     const generateBtn = document.getElementById('generate-btn');
     if (!generateBtn) return;
-    
+
     if (projectLoading) {
         generateBtn.disabled = true;
-        generateBtn.textContent = 'Loading Project...';
+        generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i><span>Loading Project…</span>';
+        generateBtn.title = 'Loading project';
     } else {
+        const isLoadedProject = Boolean(window.currentProject);
         generateBtn.disabled = false;
-        generateBtn.textContent = 'Create';
+        generateBtn.innerHTML = isLoadedProject
+            ? '<i class="fas fa-arrows-rotate" aria-hidden="true"></i><span>Update</span>'
+            : '<i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>Create</span>';
+        generateBtn.title = isLoadedProject
+            ? 'Update the current project preview'
+            : 'Create a new project preview';
     }
 }
 

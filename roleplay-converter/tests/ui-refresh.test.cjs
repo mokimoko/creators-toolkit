@@ -16,9 +16,9 @@ test('editor opens on the preview-first workflow with clear actions', () => {
 
     assert.ok(index.indexOf('id="preview-tab"') < index.indexOf('id="html-tab"'));
     assert.match(index, /class="tab active" id="preview-tab"/);
-    assert.match(index, /id="convert-btn"[^>]*>[\s\S]*Generate preview/);
-    assert.match(index, /id="save-project-btn"[^>]*disabled>[\s\S]*Save project/);
-    assert.match(index, /id="export-html-btn"[^>]*disabled>[\s\S]*Export HTML/);
+    assert.match(index, /id="convert-btn"[^>]*>[\s\S]*<span>Create<\/span>/);
+    assert.match(index, /id="save-project-btn"[^>]*disabled>[\s\S]*Save Roleplay/);
+    assert.match(index, /id="export-html-btn"[^>]*disabled>[\s\S]*Download Raw HTML/);
     assert.match(index, /id="download-fallback-btn"[\s\S]*Download instead/);
     assert.match(index, /id="copy-btn"[^>]*disabled>[\s\S]*Copy HTML/);
     assert.match(index, /id="preview-frame" title="Generated roleplay preview"/);
@@ -59,6 +59,7 @@ test('Create exposes a painted and accessible generation state', () => {
     assert.match(previewExport, /setGenerationInProgress\(true\)/);
     assert.match(previewExport, /setGenerationInProgress\(false\)/);
     assert.match(saveExport, /generationInProgress \|\| !generatedDocumentReady/);
+    assert.match(saveExport, /importedProject[\s\S]*Update[\s\S]*Create/);
 });
 
 test('Precision Brass supplies the selected font and control surfaces', () => {
@@ -113,6 +114,16 @@ test('organized imports preserve their storage folder for media checks', () => {
     assert.match(imports, /importHTML\(htmlContent, importContext\)/);
     assert.match(structuredBinding, /importContext\.storageUniverse\s*\|\|\s*story\.universe/);
     assert.match(legacyImport, /importContext\.storageUniverse[\s\S]*document\.getElementById\('universe'\)\.value/);
+});
+
+test('preview resolves stored and newly selected roleplay images without changing exports', () => {
+    const previewExport = read('modules/preview-export.js');
+
+    assert.match(previewExport, /importedProject/);
+    assert.match(previewExport, /`\/roleplays\/\$\{encodeURIComponent\(userSegment\)\}\/\$\{encodeURIComponent\(project\.universe\)\}\//);
+    assert.match(previewExport, /ToolkitSandboxedPreviewAssets\.render/);
+    assert.match(previewExport, /localAssets: getSelectedPreviewAssets\(\)/);
+    assert.match(previewExport, /assetPrefixes: \['images\/'\]/);
 });
 
 test('file buttons route through the shared picker with a click fallback', () => {

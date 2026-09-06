@@ -17,6 +17,7 @@ const { createStructuredErrorPayloads } = require('./api-errors');
 const {
     IS_LOCAL,
     USERS_FOLDER,
+    getUserRoleplaysFolder,
     getUserSitesFolder,
     initializeUserSystem
 } = require('./core');
@@ -160,6 +161,31 @@ app.get('/projects/:userContext/:projectName/*', createProjectFileBoundary(), (r
         res.sendFile(fullPath);
     } catch (error) {
         console.error('Error serving project file:', error);
+        res.status(error.statusCode || 500).send(error.message || 'Error serving file');
+    }
+});
+
+// Serve saved RP Archiver documents and their relative assets (local only).
+app.get('/roleplays/:userContext/:universe/*', createProjectFileBoundary(), (req, res) => {
+    if (!isLocal) {
+        return res.status(403).json({ error: 'File access not available in hosted environment' });
+    }
+
+    try {
+        const session = req.toolkitSession;
+        const roleplaysFolder = session.isGuest
+            ? getUserRoleplaysFolder({ isGuest: true })
+            : resolvePathInside(USERS_FOLDER, session.userId, 'roleplays');
+        const universeFolder = resolvePathInside(roleplaysFolder, req.params.universe);
+        const fullPath = resolvePathInside(universeFolder, req.params[0]);
+
+        if (!fs.pathExistsSync(fullPath) || !fs.statSync(fullPath).isFile()) {
+            return res.status(404).send('File not found');
+        }
+
+        res.sendFile(fullPath);
+    } catch (error) {
+        console.error('Error serving roleplay file:', error);
         res.status(error.statusCode || 500).send(error.message || 'Error serving file');
     }
 });

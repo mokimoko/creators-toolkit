@@ -1,5 +1,34 @@
 # Changelog
 
+## v4.0.1 - 09/06/2026
+
+This patch makes the Lore Codex and RP Archiver output workflows clearer and more consistent.
+
+### What Changed
+
+**Lore Codex**
+- Moved **Open Current Project** beside **Save Project** so saved sites are easier to view
+- The primary action now reads **Create** for a new project and **Update** for a loaded project
+- Renamed the standalone file action to **Download Raw HTML**
+- Raw HTML downloads now stay disabled until the current project has been generated and disable again when project data changes
+- Disabled save and download controls keep their normal labels while tooltips explain what action is required first
+- Loaded-project previews resolve accessible images from the saved project folder
+
+**RP Archiver**
+- Added **Open Saved Roleplay** beside **Save Roleplay**, allowing a saved reading view to open directly in the browser
+- The primary action now reads **Create** for a new roleplay and **Update** for a roleplay loaded from Toolkit storage
+- Renamed **Save Project** to **Save Roleplay** and **Export HTML** to **Download Raw HTML**
+- Open and download actions now follow the generated and saved state so stale output is not presented as current
+- Previews now display stored project images and newly selected local images when the browser can access them
+
+### What Got Fixed
+
+- Users no longer need to browse through their `users` folder to view a roleplay saved by RP Archiver
+- Lore Codex no longer allows downloading empty or stale generated HTML
+- Loading-state updates no longer replace Lore Codex's primary-action icon and intended wording
+
+---
+
 ## v4.0.0 - 08/31/2026
 
 This release refreshes Creator's Toolkit from the interface down, with a cleaner visual system, a more efficient backend, and tighter connections between Lore Codex and RP Archiver.

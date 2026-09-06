@@ -1,6 +1,69 @@
 (function definePreviewExport(root) {
     'use strict';
 
+    function fileExtension(filename) {
+        const pieces = String(filename || '').split('.');
+        return pieces.length > 1 ? pieces.pop().toLowerCase() : '';
+    }
+
+    function getPreviewBaseHref() {
+        const project = root.RPArchiver.get('state').get().importedProject;
+        const userContext = root.userSessionManager?.getUserContext?.();
+        const userSegment = userContext?.isGuest ? 'guest' : userContext?.userId;
+        if (!project?.universe || !userSegment) return '';
+
+        return `/roleplays/${encodeURIComponent(userSegment)}/${encodeURIComponent(project.universe)}/`;
+    }
+
+    function addPreviewBaseHref(html, baseHref) {
+        if (!baseHref || /<base\b/i.test(html)) return html;
+
+        return html.replace(/<head(?:\s[^>]*)?>/i, match => `${match}\n    <base href="${baseHref}">`);
+    }
+
+    function getSelectedPreviewAssets() {
+        if (typeof getSelectedImageFiles !== 'function') return [];
+        const selected = getSelectedImageFiles();
+        const cleanTitle = root.RPArchiver.get('htmlRenderer').getCleanTitle() || 'untitled';
+        const assets = [];
+
+        if (selected.backgroundFile) {
+            assets.push({
+                path: `images/${cleanTitle}-background.${fileExtension(selected.backgroundFile.name)}`,
+                blob: selected.backgroundFile
+            });
+        }
+        if (selected.bannerFile) {
+            assets.push({
+                path: `images/${cleanTitle}-banner.${fileExtension(selected.bannerFile.name)}`,
+                blob: selected.bannerFile
+            });
+        }
+        selected.storyFiles.forEach((file, index) => {
+            assets.push({
+                path: `images/${cleanTitle}-image-${selected.storyPaths.length + index + 1}.${fileExtension(file.name)}`,
+                blob: file
+            });
+        });
+        return assets;
+    }
+
+    function renderImagePreview(iframe, html) {
+        const baseHref = getPreviewBaseHref();
+        const previewHtml = addPreviewBaseHref(html, baseHref);
+        if (!root.ToolkitSandboxedPreviewAssets) {
+            iframe.srcdoc = previewHtml;
+            return;
+        }
+
+        void root.ToolkitSandboxedPreviewAssets.render(iframe, {
+            html: previewHtml,
+            baseHref,
+            assetPrefixes: ['images/'],
+            localAssets: getSelectedPreviewAssets()
+        });
+    }
+
     async function updatePreview(html) {
         const iframe = document.getElementById('preview-frame');
         const previewContainer = document.querySelector('.preview-container');
@@ -24,12 +87,12 @@
                 ? htmlWithCSS.replace('</head>', `${previewIsolationCSS}</head>`)
                 : `${previewIsolationCSS}${htmlWithCSS}`;
             iframe.setAttribute('sandbox', 'allow-scripts');
-            iframe.srcdoc = htmlWithCSS;
+            renderImagePreview(iframe, htmlWithCSS);
             
         } catch (error) {
             window.RPLogger?.error('Error loading CSS template for preview:', error);
             iframe.setAttribute('sandbox', 'allow-scripts');
-            iframe.srcdoc = html;
+            renderImagePreview(iframe, html);
         }
         
         // Add 'has-content' class to hide the empty state placeholder
@@ -180,7 +243,7 @@
             }
 
             saveExport.markGenerated(html);
-            showStatusMessage('Preview generated. Save project and Export HTML are ready.', 'success');
+            showStatusMessage('Preview generated. Save Roleplay and Download Raw HTML are ready.', 'success');
             root.RPArchiver.get('notifications').show('success', 'Preview generated successfully');
             return html;
         } catch (error) {

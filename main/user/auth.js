@@ -1389,7 +1389,7 @@ class AuthManager {
             // Fallback to hardcoded version
             const versionElement = document.getElementById('version-number');
             if (versionElement) {
-                versionElement.textContent = '4.0.0';
+                versionElement.textContent = '4.0.1';
             }
         }
     }

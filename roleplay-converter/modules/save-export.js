@@ -5,6 +5,7 @@
     let generationInProgress = false;
     let savedGeneratedDocument = '';
     let savedIdentityKey = '';
+    let savedRoleplayUrl = '';
     let loreUpdatedDocument = '';
     let loreTargets = [];
     let loreLookupTimer = null;
@@ -31,6 +32,18 @@
         return { universe, filename, key: `${universe}\n${filename}` };
     }
 
+    function updateCreateButtonLabel() {
+        const button = element('convert-btn');
+        if (!button) return;
+        const isLoadedProject = Boolean(root.RPArchiver.get('state').get().importedProject);
+        button.innerHTML = isLoadedProject
+            ? '<i class="fas fa-arrows-rotate" aria-hidden="true"></i><span>Update</span>'
+            : '<i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i><span>Create</span>';
+        button.title = isLoadedProject
+            ? 'Update the loaded roleplay preview'
+            : 'Create a new roleplay preview';
+    }
+
     function updateLoreButtonLabel(button, updated) {
         const label = button?.querySelector('span');
         if (!label) return;
@@ -47,6 +60,14 @@
             const button = element(id);
             if (button) button.disabled = generationInProgress || !generatedDocumentReady;
         });
+
+        const openButton = element('open-saved-roleplay-btn');
+        if (openButton) {
+            openButton.disabled = generationInProgress || !savedRoleplayUrl;
+            openButton.title = savedRoleplayUrl
+                ? 'Open the saved roleplay in a new browser tab'
+                : 'Save the generated roleplay to the Toolkit first';
+        }
 
         const loreButton = element('update-lore-copy-btn');
         if (!loreButton) return;
@@ -92,6 +113,7 @@
         generatedDocumentReady = false;
         savedGeneratedDocument = '';
         savedIdentityKey = '';
+        savedRoleplayUrl = '';
         loreUpdatedDocument = '';
         if (root.RPArchiver.has('state')) root.RPArchiver.get('state').clearGeneratedHTML();
         hideDownloadFallback();
@@ -101,6 +123,7 @@
     function markGenerated(html) {
         const value = typeof html === 'string' ? html : '';
         generatedDocumentReady = Boolean(value.trim());
+        savedRoleplayUrl = '';
         root.RPArchiver.get('state').get().generatedHTML = generatedDocumentReady ? value : '';
         hideDownloadFallback();
         setActionState();
@@ -217,6 +240,7 @@
 
             savedGeneratedDocument = '';
             savedIdentityKey = '';
+            savedRoleplayUrl = '';
             loreUpdatedDocument = '';
             setActionState();
             setBusy(saveButton, true);
@@ -232,6 +256,9 @@
             if (!result.assetManifest?.html?.path || !result.assetManifest?.template?.path) {
                 throw new Error('The Toolkit did not return a complete save manifest.');
             }
+            if (typeof result.viewUrl !== 'string' || !result.viewUrl.startsWith('/roleplays/')) {
+                throw new Error('The Toolkit did not return a valid roleplay URL.');
+            }
 
             const mediaCount = result.assetManifest.media?.length || 0;
             const mediaSummary = mediaCount ? ` · ${mediaCount} media asset${mediaCount === 1 ? '' : 's'}` : '';
@@ -241,7 +268,13 @@
             const identity = getCurrentIdentity();
             savedGeneratedDocument = details.html;
             savedIdentityKey = identity?.key || '';
+            savedRoleplayUrl = result.viewUrl;
             loreUpdatedDocument = '';
+            root.RPArchiver.get('state').setImportedProject({
+                universe: result.universe,
+                filename: result.filename
+            });
+            updateCreateButtonLabel();
             await refreshLoreLinks({ reportErrors: true });
             setActionState();
             return result;
@@ -254,6 +287,16 @@
         } finally {
             setBusy(saveButton, false);
         }
+    }
+
+    function openSavedRoleplay() {
+        if (!savedRoleplayUrl) {
+            showStatus('Save the generated roleplay before opening it.', 'error');
+            return false;
+        }
+
+        window.open(savedRoleplayUrl, '_blank', 'noopener,noreferrer');
+        return true;
     }
 
     async function updateLoreCopies() {
@@ -324,8 +367,8 @@
             const details = getExportDetails();
             const filename = triggerBrowserDownload(details.html, details.title);
             hideDownloadFallback();
-            showStatus(`Exported HTML to your browser downloads: ${filename}`, 'success', 7000);
-            root.RPArchiver.get('notifications').show('success', 'HTML export started');
+            showStatus(`Downloaded raw HTML to your browser downloads: ${filename}`, 'success', 7000);
+            root.RPArchiver.get('notifications').show('success', 'Raw HTML download started');
             return filename;
         } catch (error) {
             showStatus(`HTML export failed: ${error.message}`, 'error');
@@ -352,10 +395,12 @@
         getGeneratedDocument,
         invalidate,
         markGenerated,
+        openSavedRoleplay,
         refreshLoreLinks,
         scheduleLoreLinkRefresh,
         setGenerationInProgress,
         saveProject,
+        updateCreateButtonLabel,
         updateLoreCopies
     });
 })(window);

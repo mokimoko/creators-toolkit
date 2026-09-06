@@ -1,6 +1,19 @@
 (function defineImportController(root) {
     'use strict';
 
+    function updateLoadedProjectState(sourceName, importContext) {
+        const state = root.RPArchiver.get('state');
+        if (importContext.storageUniverse) {
+            state.setImportedProject({
+                universe: importContext.storageUniverse,
+                filename: sourceName
+            });
+        } else {
+            state.clearImportedProject();
+        }
+        root.RPArchiver.get('saveExport').updateCreateButtonLabel();
+    }
+
     function importRoleplayHTML(htmlContent, sourceName = 'imported HTML', importContext = {}) {
         if (typeof htmlContent !== 'string' || !htmlContent.trim()) {
             throw new Error(`${sourceName} is empty or unreadable`);
@@ -20,6 +33,7 @@
                 );
             }
             root.RPLogger?.debug(`Imported ${sourceName} as structured schema v${structuredProject.schemaVersion}`);
+            updateLoadedProjectState(sourceName, importContext);
             root.RPArchiver.get('saveExport').scheduleLoreLinkRefresh(0);
             return {
                 sourceFormat: 'structured',
@@ -36,6 +50,7 @@
             );
         }
         root.RPLogger?.debug(`Imported ${sourceName} through legacy-v0 adapter`);
+        updateLoadedProjectState(sourceName, importContext);
         root.RPArchiver.get('saveExport').scheduleLoreLinkRefresh(0);
         return { sourceFormat: 'legacy-v0', schemaVersion: null, project: null };
     }

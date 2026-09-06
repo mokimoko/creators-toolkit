@@ -518,6 +518,7 @@ button,
 
 .btn-main-action,
 .btn-save-project,
+.btn-open-roleplay,
 .btn-update-lore,
 .btn-export-html {
     min-height: 34px;
@@ -828,6 +829,7 @@ button,
 
     .btn-main-action,
     .btn-save-project,
+    .btn-open-roleplay,
     .btn-update-lore,
     .btn-export-html {
         justify-content: center;
